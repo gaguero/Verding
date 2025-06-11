@@ -4,17 +4,12 @@
     "composite": true,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "declarationDir": "dist",
     "declaration": true,
     "declarationMap": true,
     "noEmit": false
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"]
 }
