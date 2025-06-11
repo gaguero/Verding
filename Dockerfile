@@ -27,6 +27,9 @@ RUN rm -rf 'packages/*'
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
+# Generate Prisma client code so Prisma namespace is available
+RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
+
 # Build the application
 RUN npm run build
 
