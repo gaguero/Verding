@@ -1,8 +1,8 @@
+import { isDev } from '../config';
+import { logger } from '../utils/logger';
+import { Prisma } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { Prisma } from '../generated/prisma';
-import { logger } from '../utils/logger';
-import { isDev } from '../config';
 
 // Custom error classes
 export class AppError extends Error {
@@ -75,9 +75,7 @@ interface ErrorResponse {
 
 // Handle Zod validation errors
 const handleZodError = (error: ZodError): ValidationError => {
-  const message = error.errors
-    .map((err) => `${err.path.join('.')}: ${err.message}`)
-    .join(', ');
+  const message = error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ');
   return new ValidationError(`Validation failed: ${message}`, 'VALIDATION_ERROR');
 };
 
@@ -152,4 +150,4 @@ export const asyncHandler = (fn: Function) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
-}; 
+};
