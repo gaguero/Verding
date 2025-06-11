@@ -21,6 +21,9 @@ WORKDIR /app
 # Copy source code
 COPY . .
 
+# Remove stray wildcard workspace entries from base stage to prevent duplicate workspaces
+RUN rm -rf packages/\*
+
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
