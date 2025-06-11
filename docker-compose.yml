@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - API_BASE_URL=http://localhost:3001
+      - WEB_BASE_URL=http://localhost:3000
+      - CORS_ORIGIN=http://localhost:3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - JWT_SECRET=${JWT_SECRET:-your_super_secret_jwt_key_here}
+      - SESSION_SECRET=${SESSION_SECRET:-your_session_secret_here}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-your_32_character_encryption_key}
+      - LOG_LEVEL=debug
+    volumes:
+      - ./packages/backend/src:/app/src
+      - ./packages/backend/dist:/app/dist
+    depends_on:
+      - postgres
+    networks:
+      - verding-network
+
+  # Web Frontend Service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_NODE_ENV=development
+      - VITE_API_BASE_URL=http://localhost:3001
+      - VITE_SUPABASE_URL=${SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    depends_on:
+      - backend
+    networks:
+      - verding-network
+
+  # PostgreSQL Database (for local development)
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=verding_dev
+      - POSTGRES_USER=verding
+      - POSTGRES_PASSWORD=verding_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - verding-network
+
+  # Redis (for caching and sessions)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - verding-network
+
+  # n8n Workflow Automation (Agent Platform)
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=verding123
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - verding-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
+
+networks:
+  verding-network:
+    driver: bridge 

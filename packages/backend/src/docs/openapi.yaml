@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Verding Backend API
+  version: 1.0.0
+  description: API documentation for the Verding Microgreens Management Platform backend.
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Development server
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Checks the health and status of the API server.
+      responses:
+        '200':
+          description: Server is healthy and operational.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2023-10-27T10:00:00Z'
+                  environment:
+                    type: string
+                    example: development
+  /api/v1:
+    get:
+      summary: API Root
+      description: Provides an overview of the API and available endpoints.
+      responses:
+        '200':
+          description: Overview of the API.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Verding API v1
+                  version:
+                    type: string
+                    example: 1.0.0
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2023-10-27T10:00:00Z'
+                  endpoints:
+                    type: object
+                    properties:
+                      auth:
+                        type: string
+                        example: /api/v1/auth
+                      properties:
+                        type: string
+                        example: /api/v1/properties
+                      crops:
+                        type: string
+                        example: /api/v1/crops
+                      batches:
+                        type: string
+                        example: /api/v1/batches
+                      inventory:
+                        type: string
+                        example: /api/v1/inventory
+                      sales:
+                        type: string
+                        example: /api/v1/sales
+                      mcp:
+                        type: string
+                        example: /api/v1/mcp 

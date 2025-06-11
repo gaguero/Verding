@@ -1,0 +1,29 @@
+.card {
+  background-color: #FFFEF8; /* Background Paper */
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2C5545; /* Earth Green */
+  padding-bottom: 16px;
+  border-bottom: 1px solid #EAE7DC; /* Cream */
+}
+
+.cardContent {
+  flex-grow: 1;
+}
+
+.cardFooter {
+  padding-top: 16px;
+  border-top: 1px solid #EAE7DC; /* Cream */
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+} 

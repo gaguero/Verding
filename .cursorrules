@@ -1,0 +1,246 @@
+# Verding Project Rules
+
+## Project Overview
+Verding is an agent-first microgreens management platform that revolutionizes agricultural operations through natural language interaction. The system enables users to manage their entire microgreens operation through conversational commands across multiple channels.
+
+## Architecture Patterns
+
+### Agent-First Design
+- Primary interface is natural language conversation
+- GUI provides feature parity but is secondary
+- All business logic accessible via MCP tools
+- Agent orchestrates tool calls based on user intent
+
+### Multi-Property Architecture
+- Property as first-class entity and core organizing principle
+- All entities linked to property_id
+- Row-level security enforces property isolation
+- Property context switching maintains user state
+
+### External n8n Agent
+- Intelligence layer separate from business logic
+- Visual workflows for non-technical modification
+- Independent scaling from main backend
+- Direct database access for performance
+
+### Model Context Protocol (MCP)
+- 140+ defined tools across 14 categories
+- Property-aware context for all operations
+- Comprehensive error handling and graceful degradation
+- Structured communication between agent and backend
+
+## Technology Stack
+
+### Core Infrastructure
+- Database: Supabase (PostgreSQL 15+ with pgvector 0.5.0+)
+- Backend: Node.js v18+ with TypeScript 5.0+
+- Agent Platform: n8n (External workflow engine)
+- Authentication: Supabase Auth (JWT-based)
+- Deployment: Railway (Cloud platform)
+
+### Frontend
+- Web: React 18.2+ with TypeScript
+- Mobile: React Native 0.72+ with Expo SDK 49+
+- Monorepo: TBD (Nx, Turborepo, or Lerna)
+- State Management: TBD (Redux Toolkit, Zustand, or Context API)
+
+## Development Patterns
+
+### Task Management
+- Use Task Master for project management
+- 40 main tasks, 317 subtasks total
+- Critical path: Tasks 1 → 2 → 3 → 4 → 8 (Infrastructure foundation)
+- High priority: Infrastructure + Agent Core (8 tasks)
+
+### Code Organization
+```
+verding/
+├── packages/
+│   ├── backend/          # Node.js/TypeScript API
+│   ├── web/              # React web application
+│   ├── mobile/           # React Native mobile app
+│   ├── shared/           # Shared types and utilities
+│   └── docs/             # Documentation
+├── memory-bank/          # Project documentation
+├── tasks/                # Task Master files
+└── README.md
+```
+
+### Database Patterns
+- All tables include property_id for multi-tenancy
+- Vector embeddings for semantic search (1536 dimensions)
+- Row-level security (RLS) policies for data isolation
+- Time-series tables for sensor data
+
+### API Design
+- RESTful endpoints for standard operations
+- MCP tools for agent communication
+- WebSocket events for real-time updates
+- Property-scoped all operations
+
+## Security Requirements
+- JWT-based authentication via Supabase
+- Role-based access control (RBAC)
+- Row-level security (RLS) enforcement
+- Multi-factor authentication support
+- Property-scoped permissions
+
+## Performance Targets
+- API Response Time: < 200ms for 95% of requests
+- Database Queries: < 100ms for simple operations
+- Vector Search: < 500ms for semantic queries
+- Real-time Updates: < 1s latency for sensor data
+
+## Development Workflow
+
+### Collaborative Decision Making (CRITICAL)
+- **NEVER make technology decisions unilaterally**
+- **ALWAYS present options when decisions are needed:**
+  1. List all viable alternatives
+  2. Explain pros/cons of each option
+  3. Provide recommendation with reasoning
+  4. Wait for user confirmation before proceeding
+- **Decision scope includes:** Technology selections, architecture choices, implementation approaches, library choices, deployment strategies
+
+### Early Visual Development Priority
+- **Prioritize web interface development** for visual progress observation
+- **Enable testing after every subtask** through web interface
+- **Implement both automated and manual testing strategies**
+- **Focus on user visibility** of development progress
+
+### Memory Bank Maintenance
+- Read ALL memory bank files at start of each session
+- Update after significant changes or discoveries
+- Focus on activeContext.md and progress.md for current state
+- Document architectural decisions and patterns
+
+### Task Management Workflow
+- Use `get_tasks` to see current status
+- Use `next_task` to identify what to work on
+- Use `get_task <id>` for detailed task information
+- Update task status with `set_task_status`
+- Log implementation progress with `update_subtask`
+
+### Code Quality
+- TypeScript strict mode enabled
+- ESLint with Airbnb configuration
+- Prettier for consistent formatting
+- Comprehensive testing strategy
+- Security-first development
+
+## Critical Implementation Notes
+
+### Outstanding Issues
+- Task 9 (Telegram Bot Integration) needs subtask expansion
+- Technology decisions pending: monorepo tool, UI framework, state management
+
+### Next Priorities
+1. Complete Task 1: Setup Project Repository and Development Environment
+2. Expand Task 9 into subtasks
+3. Make pending technology decisions
+4. Establish Supabase infrastructure (Task 2)
+
+### Key Dependencies
+- Task 8 (Core Backend API) blocks 18 other tasks
+- Task 3 (Database Schema) blocks 15 other tasks
+- Task 27 (Web Frontend) blocks 5 other tasks
+
+## Project Intelligence
+
+### Discovered Patterns
+1. **Property-Centric Everything**: Every operation must be scoped to a property
+2. **Agent-First Approach**: Natural language must be the primary interface
+3. **External Intelligence**: n8n separation provides architectural flexibility
+4. **Hybrid Memory**: Vector + traditional search for optimal results
+
+### Implementation Insights
+1. Start with infrastructure foundation before advanced features
+2. Implement authentication and authorization early
+3. Set up testing framework from the beginning
+4. Document everything due to system complexity
+
+### User Experience Priorities
+- Zero learning curve through natural language
+- Mobile-first design for field use
+- Offline capabilities for core functions
+- Multi-channel consistency
+
+## Memory Bank Structure
+- `projectbrief.md`: Foundation document with core requirements
+- `productContext.md`: User needs and market context
+- `systemPatterns.md`: Architecture and design patterns
+- `techContext.md`: Technology stack and constraints
+- `activeContext.md`: Current work focus and decisions
+- `progress.md`: Status tracking and milestones
+- `tasksList.md`: Comprehensive task breakdown
+
+## UX/UI Style Guide
+
+### Design System Overview
+Verding follows an agent-first design philosophy with natural, agricultural aesthetics that emphasize growth, sustainability, and ease of use.
+
+### Color Palette
+- **Primary Off-White**: #F5F5F0 (backgrounds and main surfaces)
+- **Primary Earth Green**: #2C5545 (primary brand color for buttons, icons, emphasis)
+- **Secondary Sage**: #7A9B76 (secondary elements and hover states)
+- **Secondary Cream**: #EAE7DC (subtle backgrounds and selected states)
+- **Accent Teal**: #00A896 (important actions and notifications)
+- **Accent Gold**: #D4AF37 (highlights and special elements)
+- **Success Green**: #4A7C59, **Error Red**: #A13D3D, **Warning Amber**: #CD853F, **Info Blue**: #5B7B9A
+
+### Typography
+- **Primary Font**: SF Pro Text (iOS) / Roboto (Android) / Inter (Web)
+- **Display Font**: Montserrat (for headings and special elements)
+- **Weights**: Light (300), Regular (400), Medium (500), Semibold (600), Bold (700)
+
+### Component Standards
+- **Buttons**: 52dp height, 26dp corner radius (pill-shaped), Primary Earth Green background
+- **Cards**: 16-20dp corner radius, Background Paper (#FFFEF8), subtle shadows
+- **Input Fields**: 56dp height, 12dp corner radius, Secondary Sage borders
+- **Icons**: 24dp standard size, 1.5dp line weight, rounded corners
+
+### Spacing System
+- **Base Unit**: 8dp
+- **Micro**: 4dp, **Small**: 8dp, **Default**: 16dp, **Medium**: 24dp, **Large**: 32dp, **XL**: 48dp
+- **Screen Margins**: 24dp default
+- **Grid**: 4 columns (mobile), 8 (tablet), 12 (desktop)
+
+### Animation & Motion
+- **Standard Transition**: 250ms ease-out
+- **Emphasis**: 350ms spring curve
+- **Microinteractions**: 180ms ease-in-out
+- **Growth Movement**: Subtle plant-like animations (3-5px over 3-4s)
+
+### Agent Interaction Elements
+- **Conversation Bubbles**: 20dp corner radius, 80% max width, directional corners
+- **Voice Input**: 64dp diameter, Primary Earth Green, pulse animation when active
+- **Suggestion Chips**: 36dp height, pill-shaped, Secondary Cream background
+- **Knowledge Cards**: 16dp corner radius, Background Paper, subtle borders
+
+### Responsive Breakpoints
+- **Mobile**: 320dp - 599dp
+- **Tablet**: 600dp - 1023dp  
+- **Desktop**: 1024dp+
+
+### Accessibility Requirements
+- **Color Contrast**: WCAG AA standards (4.5:1 normal text, 3:1 large text)
+- **Touch Targets**: Minimum 44dp x 44dp with 8dp spacing
+- **Text Scaling**: Support system font size settings
+- **Screen Reader**: Proper labels and heading hierarchy
+
+### Dark Mode Support
+- **Dark Background**: #121212, **Dark Surface**: #1E1E1E, **Dark Paper**: #252525
+- **Adjusted Colors**: Dark Primary Green (#5B8C7B), Dark Secondary Sage (#94B090)
+- **Text**: Primary (#EEEEEE), Secondary (#B0BEC5)
+
+### Brand Elements
+- **Logo**: 120dp (splash), 80dp (main), 40dp (secondary screens)
+- **Patterns**: Leaf pattern, growth lines, microgreens grid
+- **Imagery**: High contrast plant photography, elegant line drawings
+
+## Communication Preferences
+- Use Task Master for task coordination
+- Update memory bank after significant changes
+- Document all architectural decisions
+- Prioritize user experience in all decisions
+- Balance complexity with functionality 

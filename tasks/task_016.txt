@@ -1,0 +1,77 @@
+# Task ID: 16
+# Title: Implement BuJo Task Management System
+# Status: pending
+# Dependencies: 3, 8, 13
+# Priority: medium
+# Description: Develop the Bullet Journal-inspired task management system for tracking operations and activities across properties.
+# Details:
+1. Design task data model with BuJo notation support
+2. Implement task creation via natural language
+3. Create task migration and rescheduling
+4. Implement priority management system
+5. Create task dependency tracking
+6. Implement recurring task patterns
+7. Create task completion and verification
+8. Develop task analytics and reporting
+
+Implement the core BuJo concepts of tasks (•), events (○), and notes (—) with appropriate extensions for agricultural operations. Support task migration (>) and scheduling (< date) notation. Create a natural language parser for converting phrases like "water trays tomorrow morning" into structured tasks.
+
+# Test Strategy:
+1. Test task creation with various notations
+2. Validate natural language parsing accuracy
+3. Test task migration and rescheduling
+4. Verify priority management
+5. Test dependency tracking and validation
+6. Validate recurring task generation
+7. Test completion and verification workflows
+8. Verify reporting and analytics accuracy
+
+# Subtasks:
+## 1. Design Core Data Model for BuJo System [pending]
+### Dependencies: None
+### Description: Define entities and relationships for tasks, logs (daily, weekly, monthly), collections, and metadata to support BuJo features.
+### Details:
+Include fields for task content, status (open, completed, migrated, scheduled), priority, dependencies, recurrence, and timestamps.
+
+## 2. Implement Natural Language Parsing for Task Input [pending]
+### Dependencies: 16.1
+### Description: Develop NLP routines to extract task details (title, date, priority, recurrence, dependencies) from user input.
+### Details:
+Support rapid-logging style input and recognize migration, scheduling, and completion cues.
+
+## 3. Develop Migration and Rescheduling Logic [pending]
+### Dependencies: 16.1, 16.2
+### Description: Enable tasks to be migrated between logs (daily, weekly, monthly, future) and rescheduled as per BuJo conventions.
+### Details:
+Implement rules for marking tasks as migrated, updating their log association, and reflecting changes in the data model.
+
+## 4. Implement Priority Management System [pending]
+### Dependencies: 16.1, 16.2
+### Description: Allow users to assign and modify task priorities, and ensure priority is reflected in task sorting and analytics.
+### Details:
+Support multiple priority levels and visual indicators in the UI.
+
+## 5. Enable Task Dependency Tracking [pending]
+### Dependencies: 16.1, 16.2
+### Description: Allow tasks to reference other tasks as dependencies, preventing completion until prerequisites are met.
+### Details:
+Update data model and UI to visualize and enforce dependencies.
+
+## 6. Support Recurring Tasks [pending]
+### Dependencies: 16.1, 16.2
+### Description: Implement logic for creating, tracking, and auto-generating recurring tasks based on user-defined intervals.
+### Details:
+Handle recurrence patterns (daily, weekly, monthly) and ensure proper migration and completion handling.
+
+## 7. Implement Task Completion Workflow [pending]
+### Dependencies: 16.1, 16.2, 16.5
+### Description: Allow users to mark tasks as completed, update status, and trigger any post-completion logic (e.g., analytics, dependency updates).
+### Details:
+Ensure completion is reflected in all relevant logs and analytics.
+
+## 8. Develop Analytics and Reporting Module [pending]
+### Dependencies: 16.1, 16.3, 16.4, 16.5, 16.6, 16.7
+### Description: Provide insights on task completion rates, migration frequency, priority distribution, and productivity trends.
+### Details:
+Generate visualizations and summaries to help users reflect and plan.
+

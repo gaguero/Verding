@@ -1,0 +1,90 @@
+/* === Button Base === */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 26px; /* Pill-shaped */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease-out;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Variants === */
+.primary {
+  background-color: #2C5545; /* Earth Green */
+  color: #F5F5F0; /* Off-White */
+}
+.primary:hover {
+  background-color: #1e3a30;
+}
+
+.secondary {
+  background-color: #7A9B76; /* Sage */
+  color: #F5F5F0; /* Off-White */
+}
+.secondary:hover {
+  background-color: #637f60;
+}
+
+.tertiary {
+  background-color: #EAE7DC; /* Cream */
+  color: #2C5545; /* Earth Green */
+  border-color: #2C5545;
+}
+.tertiary:hover {
+  background-color: #dcd8c9;
+}
+
+.ghost {
+  background-color: transparent;
+  color: #2C5545; /* Earth Green */
+  border-color: #2C5545;
+}
+.ghost:hover {
+  background-color: rgba(44, 85, 69, 0.1);
+}
+
+.success {
+  background-color: #4A7C59;
+  color: #F5F5F0;
+}
+.success:hover {
+  background-color: #3b6347;
+}
+
+.danger {
+  background-color: #A13D3D;
+  color: #F5F5F0;
+}
+.danger:hover {
+  background-color: #813131;
+}
+
+
+/* === Sizes === */
+.small {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.medium {
+  height: 52px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.large {
+  height: 64px;
+  padding: 0 32px;
+  font-size: 18px;
+} 

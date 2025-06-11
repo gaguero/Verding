@@ -1,0 +1,77 @@
+# Task ID: 10
+# Title: Implement WhatsApp Business API Integration
+# Status: pending
+# Dependencies: 5, 6, 8
+# Priority: medium
+# Description: Develop the WhatsApp Business API integration to enable users to interact with the Verding agent through WhatsApp messaging.
+# Details:
+1. Setup WhatsApp Business API account
+2. Implement webhook endpoint for WhatsApp messages
+3. Create message handling and routing to n8n agent
+4. Implement user authentication and property context
+5. Support media handling (images, documents)
+6. Create template message system for notifications
+7. Implement opt-in/opt-out management
+8. Setup message formatting for WhatsApp-specific display
+
+Use the official WhatsApp Business API or a provider like Twilio or MessageBird. Implement proper template message approval process. Ensure compliance with WhatsApp's business policies and rate limits.
+
+# Test Strategy:
+1. Test webhook setup and message reception
+2. Validate message handling and routing
+3. Test authentication and property context
+4. Verify media upload and download
+5. Test template message sending
+6. Validate opt-in/opt-out functionality
+7. Test message formatting and display
+8. Verify compliance with WhatsApp policies
+
+# Subtasks:
+## 1. Set Up WhatsApp Business API Account [pending]
+### Dependencies: None
+### Description: Create and verify a WhatsApp Business API account through Meta Business Manager, including business verification and phone number setup.
+### Details:
+Register your business in Meta Business Manager, complete business verification, add a phone number, and set up your WhatsApp Business profile as required by Meta's onboarding process.
+
+## 2. Configure API Access and Authentication [pending]
+### Dependencies: 10.1
+### Description: Generate and securely store API credentials (access tokens, API keys) for authenticating requests to the WhatsApp Business API.
+### Details:
+Follow Meta's instructions to generate access tokens and configure secure storage and rotation of credentials for API calls.
+
+## 3. Implement Webhook Endpoint [pending]
+### Dependencies: 10.2
+### Description: Develop and deploy a webhook endpoint to receive incoming WhatsApp events (messages, delivery receipts, status updates).
+### Details:
+Set up a publicly accessible webhook endpoint, register it with WhatsApp API, and handle incoming POST requests according to WhatsApp's webhook format.
+
+## 4. Develop Message Routing Logic [pending]
+### Dependencies: 10.3
+### Description: Create logic to route incoming messages to the appropriate handlers or services based on message type, sender, or business rules.
+### Details:
+Implement message parsing and routing to ensure correct processing of user messages, system notifications, and other event types.
+
+## 5. Integrate Media Message Support [pending]
+### Dependencies: 10.4
+### Description: Enable sending and receiving of media messages (images, documents, audio, video) via the WhatsApp API.
+### Details:
+Implement logic for handling media uploads, downloads, and message payloads according to WhatsApp API specifications.
+
+## 6. Implement Template Message Management [pending]
+### Dependencies: 10.2
+### Description: Set up management for WhatsApp message templates, including creation, approval, and usage in outbound communication.
+### Details:
+Integrate template submission and approval workflows, and ensure only approved templates are used for outbound messages as required by WhatsApp compliance.
+
+## 7. Handle User Opt-In and Opt-Out [pending]
+### Dependencies: 10.4
+### Description: Implement mechanisms for users to opt-in and opt-out of receiving WhatsApp messages, ensuring compliance with WhatsApp policies.
+### Details:
+Track user consent status, process opt-in/out requests, and update internal records to respect user preferences.
+
+## 8. Support Message Formatting and Rich Content [pending]
+### Dependencies: 10.4
+### Description: Enable support for WhatsApp message formatting (bold, italics, lists) and rich content (interactive buttons, quick replies).
+### Details:
+Implement formatting options and interactive message types as per WhatsApp API documentation to enhance user experience.
+

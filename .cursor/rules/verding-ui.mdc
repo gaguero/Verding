@@ -1,0 +1,582 @@
+---
+description: 
+globs: CSS,HTML
+alwaysApply: false
+---
+# Verding UX/UI Style Guide Implementation
+
+This rule enforces the Verding design system across all frontend components and ensures consistent implementation of the agent-first microgreens management platform aesthetic.
+
+## **Color System**
+
+### **Primary Colors**
+```typescript
+// ✅ DO: Use defined color constants
+const colors = {
+  primaryOffWhite: '#F5F5F0',
+  primaryEarthGreen: '#2C5545',
+  secondarySage: '#7A9B76',
+  secondaryCream: '#EAE7DC',
+  accentTeal: '#00A896',
+  accentGold: '#D4AF37',
+  successGreen: '#4A7C59',
+  errorRed: '#A13D3D',
+  warningAmber: '#CD853F',
+  infoBlue: '#5B7B9A',
+  backgroundPaper: '#FFFEF8',
+  backgroundDark: '#1A1A1A'
+};
+
+// ❌ DON'T: Use arbitrary colors
+const badColor = '#FF0000'; // Use errorRed instead
+```
+
+### **Dark Mode Colors**
+```typescript
+// ✅ DO: Implement dark mode variants
+const darkColors = {
+  darkBackground: '#121212',
+  darkSurface: '#1E1E1E',
+  darkPaper: '#252525',
+  darkPrimaryGreen: '#5B8C7B',
+  darkSecondarySage: '#94B090',
+  darkTextPrimary: '#EEEEEE',
+  darkTextSecondary: '#B0BEC5'
+};
+```
+
+## **Typography System**
+
+### **Font Families**
+```css
+/* ✅ DO: Use system font stack */
+.font-primary {
+  font-family: 'SF Pro Text', 'Roboto', 'Inter', system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+```
+
+### **Text Styles**
+```typescript
+// ✅ DO: Use predefined text styles
+const textStyles = {
+  h1: {
+    fontSize: '32px',
+    lineHeight: '36px',
+    fontFamily: 'Montserrat',
+    fontWeight: 700,
+    letterSpacing: '-0.3px'
+  },
+  h2: {
+    fontSize: '26px',
+    lineHeight: '30px',
+    fontFamily: 'Montserrat',
+    fontWeight: 700,
+    letterSpacing: '-0.2px'
+  },
+  h3: {
+    fontSize: '22px',
+    lineHeight: '26px',
+    fontFamily: 'Montserrat',
+    fontWeight: 600,
+    letterSpacing: '-0.1px'
+  },
+  bodyLarge: {
+    fontSize: '17px',
+    lineHeight: '24px',
+    fontWeight: 400,
+    letterSpacing: '0px'
+  },
+  body: {
+    fontSize: '15px',
+    lineHeight: '22px',
+    fontWeight: 400,
+    letterSpacing: '0px'
+  },
+  bodySmall: {
+    fontSize: '13px',
+    lineHeight: '18px',
+    fontWeight: 400,
+    letterSpacing: '0.1px'
+  },
+  caption: {
+    fontSize: '12px',
+    lineHeight: '16px',
+    fontWeight: 500,
+    letterSpacing: '0.2px'
+  },
+  buttonText: {
+    fontSize: '16px',
+    lineHeight: '24px',
+    fontWeight: 500,
+    letterSpacing: '0.1px'
+  }
+};
+```
+
+## **Component Styling**
+
+### **Buttons**
+```typescript
+// ✅ DO: Implement button variants with proper styling
+const ButtonStyles = {
+  primary: {
+    backgroundColor: '#2C5545',
+    color: '#FFFFFF',
+    height: '52px',
+    borderRadius: '26px',
+    padding: '0 16px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+    border: 'none',
+    fontSize: '16px',
+    fontWeight: 500,
+    letterSpacing: '0.1px',
+    transition: 'all 250ms ease-out',
+    '&:hover': {
+      backgroundColor: '#3a6b58', // 10% lighter
+      transform: 'scale(1.02)'
+    },
+    '&:active': {
+      backgroundColor: '#1f3d30', // 10% darker
+      transform: 'scale(0.98)'
+    },
+    '&:disabled': {
+      opacity: 0.5
+    }
+  },
+  secondary: {
+    backgroundColor: 'transparent',
+    color: '#2C5545',
+    height: '52px',
+    borderRadius: '26px',
+    padding: '0 16px',
+    border: '1.5px solid #2C5545',
+    fontSize: '16px',
+    fontWeight: 500,
+    letterSpacing: '0.1px',
+    transition: 'all 250ms ease-out',
+    '&:hover': {
+      backgroundColor: 'rgba(44, 85, 69, 0.1)'
+    },
+    '&:active': {
+      backgroundColor: 'rgba(44, 85, 69, 0.15)',
+      transform: 'scale(0.98)'
+    }
+  },
+  text: {
+    backgroundColor: 'transparent',
+    color: '#2C5545',
+    height: '44px',
+    border: 'none',
+    fontSize: '16px',
+    fontWeight: 500,
+    transition: 'all 180ms ease-in-out',
+    '&:hover': {
+      color: '#1f3d30'
+    },
+    '&:active': {
+      color: '#0f1e18',
+      transform: 'scale(0.98)'
+    }
+  }
+};
+
+// ❌ DON'T: Use inconsistent button styling
+const badButton = {
+  backgroundColor: 'blue', // Use defined colors
+  height: '40px', // Use 52px for primary buttons
+  borderRadius: '4px' // Use 26px for pill shape
+};
+```
+
+### **Cards**
+```typescript
+// ✅ DO: Use consistent card styling
+const CardStyles = {
+  standard: {
+    backgroundColor: '#FFFEF8',
+    borderRadius: '16px',
+    padding: '20px',
+    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+    border: '1px solid rgba(0, 0, 0, 0.05)'
+  },
+  feature: {
+    backgroundColor: '#FFFEF8',
+    borderRadius: '20px',
+    padding: '24px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+    border: '1px solid rgba(0, 0, 0, 0.05)'
+  },
+  data: {
+    backgroundColor: '#FFFEF8',
+    borderRadius: '16px',
+    padding: '16px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.05)'
+  }
+};
+```
+
+### **Input Fields**
+```typescript
+// ✅ DO: Implement consistent input styling
+const InputStyles = {
+  textInput: {
+    height: '56px',
+    borderRadius: '12px',
+    border: '1px solid rgba(122, 155, 118, 0.5)',
+    backgroundColor: '#FFFFFF',
+    color: '#333333',
+    padding: '12px 16px',
+    fontSize: '15px',
+    transition: 'all 250ms ease-out',
+    '&:focus': {
+      borderColor: '#2C5545',
+      borderWidth: '2px',
+      outline: 'none',
+      boxShadow: '0 0 0 3px rgba(44, 85, 69, 0.1)'
+    },
+    '&::placeholder': {
+      color: '#9E9E9E'
+    },
+    '&:disabled': {
+      opacity: 0.5
+    }
+  },
+  error: {
+    borderColor: '#A13D3D',
+    '&:focus': {
+      borderColor: '#A13D3D',
+      boxShadow: '0 0 0 3px rgba(161, 61, 61, 0.1)'
+    }
+  }
+};
+```
+
+## **Spacing System**
+
+```typescript
+// ✅ DO: Use consistent spacing values
+const spacing = {
+  micro: '4px',    // Between related elements
+  small: '8px',    // Internal padding
+  default: '16px', // Standard margins
+  medium: '24px',  // Between sections
+  large: '32px',   // Major sections separation
+  xl: '48px'       // Screen padding top/bottom
+};
+
+// ✅ DO: Use spacing in components
+const componentStyle = {
+  margin: spacing.default,
+  padding: spacing.medium,
+  gap: spacing.small
+};
+
+// ❌ DON'T: Use arbitrary spacing values
+const badSpacing = {
+  margin: '13px', // Use defined spacing values
+  padding: '7px'  // Use spacing.small (8px) instead
+};
+```
+
+## **Layout Grid**
+
+```css
+/* ✅ DO: Use responsive grid system */
+.layout-grid {
+  display: grid;
+  gap: 16px;
+  margin: 0 24px;
+}
+
+/* Mobile: 4 columns */
+@media (max-width: 599px) {
+  .layout-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tablet: 8 columns */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .layout-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Desktop: 12 columns */
+@media (min-width: 1024px) {
+  .layout-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+```
+
+## **Animation & Motion**
+
+```typescript
+// ✅ DO: Use consistent animation timing
+const animations = {
+  standard: '250ms ease-out',
+  emphasis: '350ms cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  micro: '180ms ease-in-out',
+  pageTransition: '400ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+};
+
+// ✅ DO: Implement growth animations for plant elements
+const growthAnimation = {
+  animation: 'plantGrowth 3s ease-in-out infinite',
+  '@keyframes plantGrowth': {
+    '0%, 100%': { transform: 'translateY(0px)' },
+    '50%': { transform: 'translateY(-3px)' }
+  }
+};
+
+// ✅ DO: Use pulse effect for sensor updates
+const pulseAnimation = {
+  animation: 'sensorPulse 2s ease-in-out infinite',
+  '@keyframes sensorPulse': {
+    '0%, 100%': { opacity: 1 },
+    '50%': { opacity: 0.7 }
+  }
+};
+```
+
+## **Icons**
+
+```typescript
+// ✅ DO: Use consistent icon sizing
+const iconSizes = {
+  small: '20px',
+  standard: '24px',
+  navigation: '28px',
+  feature: '32px'
+};
+
+// ✅ DO: Apply consistent icon styling
+const IconComponent = ({ size = 'standard', color = '#2C5545' }) => (
+  <svg
+    width={iconSizes[size]}
+    height={iconSizes[size]}
+    fill={color}
+    style={{
+      strokeWidth: '1.5px',
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round'
+    }}
+  >
+    {/* Icon content */}
+  </svg>
+);
+```
+
+## **Agent Interaction Elements**
+
+### **Conversation Bubbles**
+```typescript
+// ✅ DO: Style conversation bubbles correctly
+const ConversationBubbleStyles = {
+  user: {
+    backgroundColor: '#FFFEF8',
+    color: '#333333',
+    borderRadius: '20px 20px 4px 20px',
+    padding: '16px',
+    maxWidth: '80%',
+    marginLeft: 'auto',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+  },
+  agent: {
+    backgroundColor: '#2C5545',
+    color: '#FFFFFF',
+    borderRadius: '20px 20px 20px 4px',
+    padding: '16px',
+    maxWidth: '80%',
+    marginRight: 'auto',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+  }
+};
+```
+
+### **Voice Input Button**
+```typescript
+// ✅ DO: Implement voice input with proper styling
+const VoiceInputStyles = {
+  width: '64px',
+  height: '64px',
+  borderRadius: '50%',
+  backgroundColor: '#2C5545',
+  color: '#FFFFFF',
+  border: 'none',
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+  transition: 'all 250ms ease-out',
+  '&.active': {
+    animation: 'voicePulse 1.5s ease-in-out infinite',
+    backgroundColor: '#00A896'
+  },
+  '@keyframes voicePulse': {
+    '0%, 100%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.1)' }
+  }
+};
+```
+
+### **Suggestion Chips**
+```typescript
+// ✅ DO: Style suggestion chips consistently
+const SuggestionChipStyles = {
+  height: '36px',
+  backgroundColor: '#EAE7DC',
+  color: '#2C5545',
+  borderRadius: '18px',
+  padding: '0 12px',
+  border: 'none',
+  fontSize: '14px',
+  fontWeight: 500,
+  margin: '0 4px',
+  transition: 'all 180ms ease-in-out',
+  '&:hover': {
+    backgroundColor: '#d9d4c7',
+    transform: 'translateY(-1px)'
+  }
+};
+```
+
+## **Dashboard Widgets**
+
+```typescript
+// ✅ DO: Implement consistent widget framework
+const WidgetStyles = {
+  container: {
+    backgroundColor: '#FFFEF8',
+    borderRadius: '16px',
+    border: '1px solid rgba(122, 155, 118, 0.2)',
+    padding: '16px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    margin: '8px'
+  },
+  header: {
+    fontSize: '18px',
+    fontWeight: 600,
+    color: '#2C5545',
+    marginBottom: '12px'
+  },
+  loading: {
+    animation: 'widgetPulse 1.5s ease-in-out infinite',
+    backgroundColor: 'rgba(122, 155, 118, 0.3)',
+    '@keyframes widgetPulse': {
+      '0%, 100%': { opacity: 0.3 },
+      '50%': { opacity: 0.6 }
+    }
+  }
+};
+```
+
+## **Accessibility Requirements**
+
+```typescript
+// ✅ DO: Ensure WCAG AA compliance
+const accessibilityGuidelines = {
+  // Minimum contrast ratios
+  normalText: '4.5:1',
+  largeText: '3:1',
+  interactive: '3:1',
+  
+  // Touch targets
+  minTouchTarget: '44px',
+  minSpacing: '8px',
+  
+  // Focus indicators
+  focusOutline: '2px solid #2C5545',
+  focusOffset: '2px'
+};
+
+// ✅ DO: Implement proper focus management
+const focusStyles = {
+  '&:focus': {
+    outline: '2px solid #2C5545',
+    outlineOffset: '2px'
+  },
+  '&:focus:not(:focus-visible)': {
+    outline: 'none'
+  }
+};
+```
+
+## **Responsive Breakpoints**
+
+```typescript
+// ✅ DO: Use consistent breakpoints
+const breakpoints = {
+  mobile: '320px - 599px',
+  tablet: '600px - 1023px',
+  desktop: '1024px+'
+};
+
+// ✅ DO: Implement responsive behavior
+const responsiveStyles = {
+  '@media (max-width: 599px)': {
+    // Mobile styles
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    fontSize: '14px'
+  },
+  '@media (min-width: 600px) and (max-width: 1023px)': {
+    // Tablet styles
+    gridTemplateColumns: 'repeat(8, 1fr)',
+    fontSize: '15px'
+  },
+  '@media (min-width: 1024px)': {
+    // Desktop styles
+    gridTemplateColumns: 'repeat(12, 1fr)',
+    fontSize: '16px'
+  }
+};
+```
+
+## **Implementation Guidelines**
+
+- **Always use the defined color palette** - no arbitrary colors
+- **Implement consistent spacing** using the 8dp base unit system
+- **Follow typography hierarchy** with proper font families and weights
+- **Ensure accessibility compliance** with WCAG AA standards
+- **Use consistent animation timing** for smooth interactions
+- **Implement proper focus management** for keyboard navigation
+- **Support dark mode** with appropriate color variants
+- **Maintain responsive behavior** across all breakpoints
+- **Use semantic HTML** with proper ARIA labels
+- **Test with screen readers** and keyboard-only navigation
+
+## **Common Patterns**
+
+```typescript
+// ✅ DO: Create reusable component patterns
+const CommonPatterns = {
+  // Status indicators with color coding
+  statusIndicator: (status: 'success' | 'warning' | 'error' | 'info') => ({
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: {
+      success: '#4A7C59',
+      warning: '#CD853F',
+      error: '#A13D3D',
+      info: '#5B7B9A'
+    }[status]
+  }),
+  
+  // Loading states with shimmer effect
+  shimmerLoading: {
+    background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'shimmer 1.5s infinite',
+    '@keyframes shimmer': {
+      '0%': { backgroundPosition: '-200% 0' },
+      '100%': { backgroundPosition: '200% 0' }
+    }
+  }
+};
+```
+
+Reference the [Verding UX/UI Style Guide](mdc:BASES/Verding_%20Agent-First%20Microgreens%20Management%20System%20-%20UX_UI%20Style%20Guide.md) for complete specifications and additional details.

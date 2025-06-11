@@ -1,0 +1,48 @@
+# Generated files
+**/generated/**
+**/prisma/runtime/**
+**/node_modules/**
+**/dist/**
+**/build/**
+**/coverage/**
+
+# Environment files
+.env*
+!.env.example
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Service Worker (generated)
+**/sw.js
+
+# Test files that use scripts pattern
+scripts/test-*.js
+scripts/setup-*.js
+scripts/create-*.js
+scripts/fix-*.js
+scripts/run-*.js
+scripts/check-*.js
+scripts/sync-*.js
+scripts/validate-*.js
+
+# Generated Prisma files
+packages/backend/src/generated/** 

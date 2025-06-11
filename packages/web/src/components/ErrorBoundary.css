@@ -1,0 +1,41 @@
+/* ErrorBoundary Component Styles */
+
+.error-boundary {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--color-error-bg, #fef2f2);
+  border: 1px solid var(--color-error-border, #fecaca);
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.error-boundary__title {
+  color: var(--color-error-text, #dc2626);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.error-boundary__message {
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: 1rem;
+}
+
+.error-boundary__details {
+  background-color: var(--color-surface, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  text-align: left;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.error-boundary__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+} 

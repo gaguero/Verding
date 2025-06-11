@@ -1,0 +1,333 @@
+{
+  "meta": {
+    "generatedAt": "2025-05-29T23:32:46.574Z",
+    "tasksAnalyzed": 40,
+    "totalTasks": 40,
+    "analysisCount": 40,
+    "thresholdScore": 5,
+    "projectName": "Task Master",
+    "usedResearch": true
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Setup Project Repository and Development Environment",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down the setup of the project repository and development environment into granular steps, including repository creation, monorepo structuring, configuration of linting and formatting tools, CI/CD setup, environment configuration, and documentation.",
+      "reasoning": "This task involves multiple technologies (backend, frontend, mobile, shared code), CI/CD, and environment management. Each area requires careful configuration and documentation, making it moderately complex and suitable for expansion into at least one subtask per major area."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Setup Supabase Infrastructure",
+      "complexityScore": 8,
+      "recommendedSubtasks": 9,
+      "expansionPrompt": "Expand the Supabase infrastructure setup into subtasks for project creation, authentication, schema design, RLS, pgvector, storage, backups, API key management, and environment validation.",
+      "reasoning": "This task covers database, authentication, storage, security, and vector search, each with its own configuration and testing requirements. The breadth and depth of setup justify a high complexity and a subtask for each major component."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Implement Core Database Schema",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Decompose the core schema implementation into subtasks for each major table/group, relationships, indexing, triggers, RLS, UUID/timestamp handling, and schema validation.",
+      "reasoning": "Designing and implementing a foundational schema with complex relationships, RBAC, and performance considerations is a high-complexity task, best managed by splitting into subtasks for each schema area."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Setup Authentication and Authorization System",
+      "complexityScore": 9,
+      "recommendedSubtasks": 9,
+      "expansionPrompt": "Expand authentication and authorization into subtasks for provider setup, JWT handling, middleware, RBAC, property context, invitation flows, MFA, audit logging, and security validation.",
+      "reasoning": "This task spans authentication, multi-role authorization, property isolation, MFA, and audit logging, each with significant implementation and security implications, warranting a high complexity score and detailed subtasks."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Setup n8n Agent Core Infrastructure",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down n8n agent setup into subtasks for instance provisioning, backend integration, webhook setup, credential management, workflow templates, error handling, monitoring, and backup procedures.",
+      "reasoning": "Setting up n8n as an external workflow engine with secure integration, error handling, and monitoring involves several distinct technical areas, each meriting its own subtask."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Implement Model Context Protocol (MCP) Tools",
+      "complexityScore": 9,
+      "recommendedSubtasks": 10,
+      "expansionPrompt": "Decompose MCP tool implementation into subtasks for protocol design, handler implementation, tool registration, context awareness, error handling, categorization, documentation, rate limiting, security, and integration testing.",
+      "reasoning": "Designing a protocol and supporting 140+ tools with structured invocation, security, and integration is highly complex, requiring careful breakdown into protocol, tooling, and integration subtasks."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Implement Vector Database for Agent Memory",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand vector database implementation into subtasks for pgvector setup, schema design, embedding generation, API endpoints, hybrid search, access controls, memory management, and indexing.",
+      "reasoning": "Combining dense/sparse vector search, embedding generation, and property-scoped access in a performant, secure system is complex and should be split into focused subtasks."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Implement Core Backend API Services",
+      "complexityScore": 9,
+      "recommendedSubtasks": 9,
+      "expansionPrompt": "Break down backend API implementation into subtasks for server setup, API structure, middleware, endpoint development, validation, documentation, security, logging, and monitoring.",
+      "reasoning": "Building the core backend API with robust structure, security, validation, and monitoring is a large, multifaceted task requiring granular subtasks for each major concern."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Implement Telegram Bot Integration",
+      "complexityScore": 6,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand Telegram bot integration into subtasks for bot registration, webhook setup, message routing, authentication, media handling, command handlers, group support, and formatting.",
+      "reasoning": "While not as complex as core backend tasks, integrating a messaging bot with authentication, media, and group support involves several distinct steps, each suitable as a subtask."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Implement WhatsApp Business API Integration",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down WhatsApp integration into subtasks for API account setup, webhook implementation, message routing, authentication, media support, template management, opt-in/out, and formatting.",
+      "reasoning": "WhatsApp integration is more complex than Telegram due to business API requirements, template approval, and compliance, justifying a higher complexity and detailed subtasks."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Implement Email Processing Integration",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand email processing into subtasks for infrastructure setup, webhook implementation, parsing, authentication, attachment handling, response formatting, threading, and spam/security.",
+      "reasoning": "Email integration involves infrastructure, parsing, security, and threading, each with unique challenges, making it moderately complex and suitable for detailed subtasks."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Implement Web Chat Interface",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down web chat interface into subtasks for component creation, real-time communication, UI design, suggestion chips, rich responses, file support, history, and responsive design.",
+      "reasoning": "Building a real-time, responsive chat interface with rich features and accessibility involves multiple UI and backend integration points, each meriting a subtask."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Implement Natural Language Processing Core",
+      "complexityScore": 9,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand NLP core into subtasks for API integration, prompt engineering, context management, intent classification, entity extraction, response generation, error handling, and multilingual support.",
+      "reasoning": "Developing a robust NLP core with intent, entity, context, and multilingual support is highly complex, requiring focused subtasks for each major capability."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Implement Home Assistant Integration",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down Home Assistant integration into subtasks for MQTT bridge, authentication, sensor discovery, data collection, time-series storage, alerting, visualization, and health monitoring.",
+      "reasoning": "Integrating with Home Assistant for real-time sensor data, storage, and visualization involves multiple technical domains, each needing a dedicated subtask."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Implement Stripe Integration for Billing",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand Stripe integration into subtasks for account setup, API integration, subscription management, payment methods, webhook handling, invoicing, trial/proration, and tax reporting.",
+      "reasoning": "Billing integration covers payments, subscriptions, webhooks, and compliance, each with distinct implementation and testing needs, justifying detailed subtasks."
+    },
+    {
+      "taskId": 16,
+      "taskTitle": "Implement BuJo Task Management System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down BuJo system into subtasks for data model, natural language parsing, migration/rescheduling, priority management, dependency tracking, recurring tasks, completion, and analytics.",
+      "reasoning": "Implementing a flexible, NLP-driven task system with migration, dependencies, and analytics is complex and should be split into subtasks for each major feature."
+    },
+    {
+      "taskId": 17,
+      "taskTitle": "Implement Multi-Property Management System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand multi-property management into subtasks for property creation, hierarchy, metadata, user assignment, permissions, context switching, cross-property analytics, and settings.",
+      "reasoning": "Supporting hierarchical, multi-property management with RBAC and analytics is a complex architectural challenge, best managed by dividing into focused subtasks."
+    },
+    {
+      "taskId": 18,
+      "taskTitle": "Implement Sowing Management System",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down sowing management into subtasks for batch modeling, resource calculation, scheduling, yield prediction, tracking, inventory, labeling, and analytics.",
+      "reasoning": "Sowing management involves modeling, prediction, inventory, and analytics, each with distinct logic and data flows, warranting detailed subtasks."
+    },
+    {
+      "taskId": 19,
+      "taskTitle": "Implement Harvest Planning System",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand harvest planning into subtasks for maturity tracking, scheduling, yield recording, quality assessment, resource planning, post-harvest tracking, notifications, and analytics.",
+      "reasoning": "Harvest planning requires tracking, scheduling, quality, and analytics, each with unique requirements, making it moderately complex and suitable for granular subtasks."
+    },
+    {
+      "taskId": 20,
+      "taskTitle": "Implement Customer Profile Management",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down customer management into subtasks for data modeling, contact handling, preference tracking, communication logging, categorization, credit management, analytics, and portal access.",
+      "reasoning": "A CRM system with preference, communication, and credit management is moderately complex, with each area requiring focused implementation."
+    },
+    {
+      "taskId": 21,
+      "taskTitle": "Implement Subscription Order Management",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand subscription management into subtasks for data modeling, recurring order setup, modification handling, pause/resume, billing cycles, analytics, notifications, and template management.",
+      "reasoning": "Subscription management involves recurring logic, billing, notifications, and analytics, each with distinct flows, justifying detailed subtasks."
+    },
+    {
+      "taskId": 22,
+      "taskTitle": "Implement One-Time Order Processing",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down order processing into subtasks for data modeling, order workflow, modification handling, status tracking, returns/refunds, analytics, notifications, and template management.",
+      "reasoning": "Order processing covers workflow, status, returns, and analytics, each with unique logic, making it moderately complex and suitable for granular subtasks."
+    },
+    {
+      "taskId": 23,
+      "taskTitle": "Implement Delivery Management System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand delivery management into subtasks for data modeling, route optimization, scheduling, status tracking, proof of delivery, analytics, notifications, and template management.",
+      "reasoning": "Delivery management with route optimization, proof, and analytics is complex, requiring focused subtasks for each major area."
+    },
+    {
+      "taskId": 24,
+      "taskTitle": "Implement Document Processing System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down document processing into subtasks for data modeling, format support, text extraction, metadata, version control, categorization, search, and analytics.",
+      "reasoning": "Handling multi-format documents, extraction, metadata, and search is technically challenging, justifying a high complexity and detailed subtasks."
+    },
+    {
+      "taskId": 25,
+      "taskTitle": "Implement Knowledge Base Integration",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand knowledge base integration into subtasks for organization, categorization, semantic indexing, relationship mapping, tag management, RAG retrieval, source attribution, and analytics.",
+      "reasoning": "A knowledge base with semantic search, RAG, and analytics is complex, requiring focused subtasks for each major capability."
+    },
+    {
+      "taskId": 26,
+      "taskTitle": "Implement Google Drive Synchronization",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down Google Drive sync into subtasks for API integration, OAuth, bidirectional sync, formatting, conflict resolution, change tracking, folder management, and analytics.",
+      "reasoning": "Drive sync involves authentication, sync logic, conflict handling, and analytics, each with unique technical challenges."
+    },
+    {
+      "taskId": 27,
+      "taskTitle": "Implement Web Frontend Core",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand web frontend core into subtasks for app setup, responsive layout, authentication, state management, UI components, error handling, loading states, and offline capability.",
+      "reasoning": "Building a robust, responsive frontend with authentication, state, and offline support is complex and should be split into focused subtasks."
+    },
+    {
+      "taskId": 28,
+      "taskTitle": "Implement Mobile App Foundation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down mobile app foundation into subtasks for app setup, navigation, authentication, state management, UI components, error handling, loading states, and offline capability.",
+      "reasoning": "Mobile app development with navigation, authentication, and device integration is complex, requiring granular subtasks for each major area."
+    },
+    {
+      "taskId": 29,
+      "taskTitle": "Implement Customizable Dashboards",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand dashboard implementation into subtasks for layout engine, widget system, drag-and-drop, real-time updates, property views, saving/loading, sharing/templates, and analytics.",
+      "reasoning": "Customizable dashboards with real-time updates and sharing involve complex UI and backend integration, justifying detailed subtasks."
+    },
+    {
+      "taskId": 30,
+      "taskTitle": "Implement Production Tracking Interface",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down production tracking into subtasks for batch monitoring, growth visualization, intervention logging, analytics, comparison tools, timeline visualization, filtering/search, and reporting.",
+      "reasoning": "Production tracking with visualization, analytics, and reporting is complex, requiring focused subtasks for each feature."
+    },
+    {
+      "taskId": 31,
+      "taskTitle": "Implement Sensor Monitoring Interface",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand sensor monitoring into subtasks for dashboard, real-time visualization, historical charts, alerting, compliance records, health monitoring, export/reporting, and anomaly detection.",
+      "reasoning": "Sensor monitoring with real-time data, compliance, and anomaly detection is technically challenging, justifying granular subtasks."
+    },
+    {
+      "taskId": 32,
+      "taskTitle": "Implement Customer and Order Management Interface",
+      "complexityScore": 9,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down customer/order interface into subtasks for customer management, subscription tools, order workflow, delivery management, communication tools, analytics, batch operations, and template management.",
+      "reasoning": "A comprehensive interface integrating CRM, orders, subscriptions, and deliveries is highly complex, requiring detailed subtasks for each major workflow."
+    },
+    {
+      "taskId": 33,
+      "taskTitle": "Implement Security Features and Compliance",
+      "complexityScore": 9,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand security and compliance into subtasks for input validation, SQL injection prevention, XSS prevention, CSRF protection, encryption, compliance reporting, data retention, and monitoring.",
+      "reasoning": "Implementing platform-wide security and compliance features is highly complex, with each area requiring focused attention and validation."
+    },
+    {
+      "taskId": 34,
+      "taskTitle": "Implement Progressive Onboarding System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down onboarding into subtasks for conversational flow, profile creation, business info collection, preference setting, feature unlocking, analytics, resumption/state, and multi-platform consistency.",
+      "reasoning": "Conversational onboarding with state management and multi-platform support is complex, requiring granular subtasks for each step."
+    },
+    {
+      "taskId": 35,
+      "taskTitle": "Implement Performance Optimization",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand performance optimization into subtasks for query optimization, API caching, frontend optimization, asset delivery, lazy loading, indexing, connection pooling, and monitoring.",
+      "reasoning": "Optimizing performance across backend, frontend, and infrastructure is complex, with each area needing focused improvements and validation."
+    },
+    {
+      "taskId": 36,
+      "taskTitle": "Implement Monitoring and Logging System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down monitoring/logging into subtasks for structured logging, error tracking, metrics collection, alerting, user analytics, performance dashboards, log aggregation, and KPI dashboards.",
+      "reasoning": "Comprehensive monitoring and logging across services, errors, and business metrics is complex, requiring granular subtasks for each capability."
+    },
+    {
+      "taskId": 37,
+      "taskTitle": "Implement Deployment Pipeline",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand deployment pipeline into subtasks for CI/CD configuration, automated testing, build process, deployment, blue-green strategy, rollback, environment configs, and monitoring.",
+      "reasoning": "Setting up a robust CI/CD pipeline with testing, deployment strategies, and monitoring is complex, with each area needing focused implementation."
+    },
+    {
+      "taskId": 38,
+      "taskTitle": "Implement Disaster Recovery System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down disaster recovery into subtasks for backup automation, verification, geographic redundancy, restoration procedures, continuity planning, incident response, recovery monitoring, and simulation.",
+      "reasoning": "Disaster recovery with automated backups, redundancy, and testing is complex, requiring granular subtasks for each major process."
+    },
+    {
+      "taskId": 39,
+      "taskTitle": "Implement Documentation System",
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Expand documentation system into subtasks for API docs, user guides, developer docs, API explorer, video tutorials, search/navigation, multi-language support, and versioning.",
+      "reasoning": "Comprehensive documentation with multiple formats and languages is moderately complex, with each area needing focused development."
+    },
+    {
+      "taskId": 40,
+      "taskTitle": "Implement System Integration Testing",
+      "complexityScore": 9,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down integration testing into subtasks for scenario creation, automated tests, performance/load testing, security testing, UAT, compatibility, regression, and CI integration.",
+      "reasoning": "System-wide integration testing across all components, including performance and security, is highly complex and should be split into detailed subtasks."
+    }
+  ]
+}

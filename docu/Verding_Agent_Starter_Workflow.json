@@ -1,0 +1,630 @@
+{
+  "name": "Verding Agent Starter Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "verding-agent",
+        "options": {}
+      },
+      "id": "f8e24eb6-4b4b-4506-8b81-74c416129a5a",
+      "name": "Agent Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -80
+      ],
+      "webhookId": "verding-agent-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "properties"
+      },
+      "id": "1e728a80-6904-4aff-83fa-fe5cbc684d1f",
+      "name": "Get Properties",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -80
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract user message from webhook payload\n// Handle different possible webhook data structures\nconst webhookData = $node[\"Agent Webhook\"].json;\nconst userMessage = webhookData.message || webhookData.body?.message || webhookData.query?.message || 'Hello';\nconst userId = webhookData.user_id || webhookData.body?.user_id || webhookData.query?.user_id || 'a546fb65-18f8-4c62-9c50-6c705e82c525';\nconst propertyId = webhookData.property_id || webhookData.body?.property_id || webhookData.query?.property_id || null;\n\n// Get properties data from the Supabase node using n8n's $node syntax\nlet properties = [];\ntry {\n  // Access the Get Properties node output directly\n  const propertiesData = $node[\"Get Properties\"].json;\n  \n  // The Supabase node returns an array directly\n  if (Array.isArray(propertiesData)) {\n    properties = propertiesData;\n  } else if (propertiesData && typeof propertiesData === 'object') {\n    // If it's a single object, wrap it in an array\n    properties = [propertiesData];\n  }\n} catch (error) {\n  console.log('Error processing properties data:', error);\n  properties = [];\n}\n\n// Create context for the agent\nconst agentContext = {\n  user: {\n    id: userId,\n    message: userMessage,\n    timestamp: new Date().toISOString()\n  },\n  property: {\n    id: propertyId,\n    available_properties: properties\n  },\n  system: {\n    platform: 'verding',\n    version: '0.1.0',\n    capabilities: [\n      'property_management',\n      'sowing_tracking',\n      'harvest_planning',\n      'customer_management',\n      'order_processing'\n    ]\n  }\n};\n\n// Prepare prompt for OpenAI\nconst systemPrompt = `You are Verding, an AI assistant for microgreens farm management. You help users manage their properties, track sowing and harvests, handle customers and orders.\n\nAvailable properties: ${JSON.stringify(properties, null, 2)}\n\nUser context: ${JSON.stringify(agentContext.user, null, 2)}\n\nRespond helpfully and concisely. If the user needs to perform actions, suggest specific next steps.`;\n\nreturn {\n  json: {\n    system_prompt: systemPrompt,\n    user_message: userMessage,\n    context: agentContext\n  }\n};"
+      },
+      "id": "aca57e95-798f-44cb-a1f4-3d9d4ff25f34",
+      "name": "Prepare Agent Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "conversation_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $node['Prepare Agent Context'].json.context.user.id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $node['Prepare Agent Context'].json.context.property.id }}"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "web"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "user"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Prepare Agent Context'].json.user_message }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($node['Prepare Agent Context'].json.context) }}"
+            }
+          ]
+        }
+      },
+      "id": "8385d7a2-7bfb-49ba-9c63-74b587243285",
+      "name": "Log User Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        316,
+        -180
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "conversation_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $node['Prepare Agent Context'].json.context.user.id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $node['Prepare Agent Context'].json.context.property.id }}"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "web"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "assistant"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $json.choices[0].message.content }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($node['Prepare Agent Context'].json.context) }}"
+            }
+          ]
+        }
+      },
+      "id": "2c478f7a-e9c1-409b-8d5a-3a72cb2ac2e4",
+      "name": "Log Agent Response",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        316,
+        20
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI-2025-04-14"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.system_prompt }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.user_message }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 500,
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -60,
+        -80
+      ],
+      "id": "8fd7316f-ffe4-4648-850c-e3213c79248a",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "yNW2ND5XFoovQKbn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n          \"success\": true,\n          \"response\": \"{{ $('OpenAI').item.json.choices[0].message.content.response }}\",\n          \"context\":{{ JSON.stringify($node['Prepare Agent Context'].json.context) }},\n          \"timestamp\": \"{{ new Date().toISOString() }}\"\n        }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        756,
+        -80
+      ],
+      "id": "044f910e-9dbb-45b5-a4d6-e399e32ddd1a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        536,
+        -80
+      ],
+      "id": "c686ec52-18e2-4b41-b899-3747e53e6417",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "Agent Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "nbdt.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "content-length": "0",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "64.227.21.251",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9487c16a25e3aa39-EWR",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "64.227.21.251, 104.23.187.72",
+            "x-forwarded-host": "nbdt.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-14-5654dfbc89-jnfjz",
+            "x-is-trusted": "yes",
+            "x-real-ip": "64.227.21.251"
+          },
+          "params": {},
+          "query": {
+            "message": "hi"
+          },
+          "webhookUrl": "https://nbdt.app.n8n.cloud/webhook-test/verding-agent",
+          "executionMode": "test"
+        }
+      }
+    ],
+    "Get Properties": [
+      {
+        "json": {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "name": "Verde Valley Farm",
+          "description": "Primary microgreens production facility with 6 growing rooms and automated climate control.",
+          "location": "0101000020E6100000DBF97E6ABC045CC065AA6054526F4140",
+          "address": {
+            "city": "Sedona",
+            "state": "Arizona",
+            "street": "1234 Farm Road",
+            "country": "USA",
+            "postal_code": "86336"
+          },
+          "timezone": "America/Phoenix",
+          "settings": {
+            "growing_rooms": 6,
+            "automated_climate": true,
+            "delivery_radius_km": 50,
+            "production_capacity": "500_trays_weekly"
+          },
+          "metadata": {
+            "specialty": "restaurant_supply",
+            "established": "2023-01-15",
+            "certifications": [
+              "organic",
+              "gap"
+            ]
+          },
+          "created_at": "2025-05-30T20:32:12.131224+00:00",
+          "updated_at": "2025-05-30T20:32:12.131224+00:00",
+          "is_active": true
+        }
+      },
+      {
+        "json": {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "name": "City Greens Hub",
+          "description": "Urban microgreens operation focusing on direct-to-consumer sales and farmers markets.",
+          "location": "0101000020E61000008F53742497FB5BC094F6065F98BC4040",
+          "address": {
+            "city": "Phoenix",
+            "state": "Arizona",
+            "street": "567 Urban Way",
+            "country": "USA",
+            "postal_code": "85004"
+          },
+          "timezone": "America/Phoenix",
+          "settings": {
+            "growing_rooms": 3,
+            "automated_climate": false,
+            "delivery_radius_km": 25,
+            "production_capacity": "200_trays_weekly"
+          },
+          "metadata": {
+            "specialty": "farmers_markets",
+            "established": "2023-06-10",
+            "certifications": [
+              "local_organic"
+            ]
+          },
+          "created_at": "2025-05-30T20:32:12.131224+00:00",
+          "updated_at": "2025-05-30T20:32:12.131224+00:00",
+          "is_active": true
+        }
+      },
+      {
+        "json": {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "name": "Innovation Lab",
+          "description": "Research and development facility for testing new varieties and growing techniques.",
+          "location": "0101000020E61000001B2FDD2406F95BC04CA60A4625B54040",
+          "address": {
+            "city": "Tempe",
+            "state": "Arizona",
+            "street": "789 Innovation Drive",
+            "country": "USA",
+            "postal_code": "85281"
+          },
+          "timezone": "America/Phoenix",
+          "settings": {
+            "growing_rooms": 2,
+            "automated_climate": true,
+            "delivery_radius_km": 15,
+            "production_capacity": "100_trays_weekly"
+          },
+          "metadata": {
+            "specialty": "variety_development",
+            "established": "2023-09-01",
+            "certifications": [
+              "research"
+            ]
+          },
+          "created_at": "2025-05-30T20:32:12.131224+00:00",
+          "updated_at": "2025-05-30T20:32:12.131224+00:00",
+          "is_active": true
+        }
+      }
+    ],
+    "Prepare Agent Context": [
+      {
+        "json": {
+          "system_prompt": "You are Verding, an AI assistant for microgreens farm management. You help users manage their properties, track sowing and harvests, handle customers and orders.\n\nAvailable properties: [\n  {\n    \"id\": \"11111111-1111-1111-1111-111111111111\",\n    \"name\": \"Verde Valley Farm\",\n    \"description\": \"Primary microgreens production facility with 6 growing rooms and automated climate control.\",\n    \"location\": \"0101000020E6100000DBF97E6ABC045CC065AA6054526F4140\",\n    \"address\": {\n      \"city\": \"Sedona\",\n      \"state\": \"Arizona\",\n      \"street\": \"1234 Farm Road\",\n      \"country\": \"USA\",\n      \"postal_code\": \"86336\"\n    },\n    \"timezone\": \"America/Phoenix\",\n    \"settings\": {\n      \"growing_rooms\": 6,\n      \"automated_climate\": true,\n      \"delivery_radius_km\": 50,\n      \"production_capacity\": \"500_trays_weekly\"\n    },\n    \"metadata\": {\n      \"specialty\": \"restaurant_supply\",\n      \"established\": \"2023-01-15\",\n      \"certifications\": [\n        \"organic\",\n        \"gap\"\n      ]\n    },\n    \"created_at\": \"2025-05-30T20:32:12.131224+00:00\",\n    \"updated_at\": \"2025-05-30T20:32:12.131224+00:00\",\n    \"is_active\": true\n  }\n]\n\nUser context: {\n  \"id\": \"a546fb65-18f8-4c62-9c50-6c705e82c525\",\n  \"message\": \"hi\",\n  \"timestamp\": \"2025-05-31T17:03:14.854Z\"\n}\n\nRespond helpfully and concisely. If the user needs to perform actions, suggest specific next steps.",
+          "user_message": "hi",
+          "context": {
+            "user": {
+              "id": "a546fb65-18f8-4c62-9c50-6c705e82c525",
+              "message": "hi",
+              "timestamp": "2025-05-31T17:03:14.854Z"
+            },
+            "property": {
+              "id": null,
+              "available_properties": [
+                {
+                  "id": "11111111-1111-1111-1111-111111111111",
+                  "name": "Verde Valley Farm",
+                  "description": "Primary microgreens production facility with 6 growing rooms and automated climate control.",
+                  "location": "0101000020E6100000DBF97E6ABC045CC065AA6054526F4140",
+                  "address": {
+                    "city": "Sedona",
+                    "state": "Arizona",
+                    "street": "1234 Farm Road",
+                    "country": "USA",
+                    "postal_code": "86336"
+                  },
+                  "timezone": "America/Phoenix",
+                  "settings": {
+                    "growing_rooms": 6,
+                    "automated_climate": true,
+                    "delivery_radius_km": 50,
+                    "production_capacity": "500_trays_weekly"
+                  },
+                  "metadata": {
+                    "specialty": "restaurant_supply",
+                    "established": "2023-01-15",
+                    "certifications": [
+                      "organic",
+                      "gap"
+                    ]
+                  },
+                  "created_at": "2025-05-30T20:32:12.131224+00:00",
+                  "updated_at": "2025-05-30T20:32:12.131224+00:00",
+                  "is_active": true
+                }
+              ]
+            },
+            "system": {
+              "platform": "verding",
+              "version": "0.1.0",
+              "capabilities": [
+                "property_management",
+                "sowing_tracking",
+                "harvest_planning",
+                "customer_management",
+                "order_processing"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "Log User Message": [
+      {
+        "json": {
+          "id": "87b46257-9491-44be-b9b7-e8adadc8d4c8",
+          "user_id": "a546fb65-18f8-4c62-9c50-6c705e82c525",
+          "property_id": null,
+          "session_id": null,
+          "chat_id": null,
+          "channel": "web",
+          "role": "user",
+          "content": "hi",
+          "embedding": null,
+          "message_index": null,
+          "metadata": "{\"user\":{\"id\":\"a546fb65-18f8-4c62-9c50-6c705e82c525\",\"message\":\"hi\",\"timestamp\":\"2025-05-31T17:03:14.854Z\"},\"property\":{\"id\":null,\"available_properties\":[{\"id\":\"11111111-1111-1111-1111-111111111111\",\"name\":\"Verde Valley Farm\",\"description\":\"Primary microgreens production facility with 6 growing rooms and automated climate control.\",\"location\":\"0101000020E6100000DBF97E6ABC045CC065AA6054526F4140\",\"address\":{\"city\":\"Sedona\",\"state\":\"Arizona\",\"street\":\"1234 Farm Road\",\"country\":\"USA\",\"postal_code\":\"86336\"},\"timezone\":\"America/Phoenix\",\"settings\":{\"growing_rooms\":6,\"automated_climate\":true,\"delivery_radius_km\":50,\"production_capacity\":\"500_trays_weekly\"},\"metadata\":{\"specialty\":\"restaurant_supply\",\"established\":\"2023-01-15\",\"certifications\":[\"organic\",\"gap\"]},\"created_at\":\"2025-05-30T20:32:12.131224+00:00\",\"updated_at\":\"2025-05-30T20:32:12.131224+00:00\",\"is_active\":true}]},\"system\":{\"platform\":\"verding\",\"version\":\"0.1.0\",\"capabilities\":[\"property_management\",\"sowing_tracking\",\"harvest_planning\",\"customer_management\",\"order_processing\"]}}",
+          "created_at": "2025-05-31T17:04:07.460217+00:00"
+        }
+      }
+    ],
+    "Log Agent Response": [
+      {
+        "json": {
+          "id": "34f73fc5-070a-4df9-808f-806f37c943e9",
+          "user_id": "a546fb65-18f8-4c62-9c50-6c705e82c525",
+          "property_id": null,
+          "session_id": null,
+          "chat_id": null,
+          "channel": "web",
+          "role": "assistant",
+          "content": "{\"response\":\"Hello! How can I assist you with your microgreens farm today? You can manage properties, track sowing and harvests, handle customers, or manage orders. What would you like to do?\"}",
+          "embedding": null,
+          "message_index": null,
+          "metadata": "{\"user\":{\"id\":\"a546fb65-18f8-4c62-9c50-6c705e82c525\",\"message\":\"hi\",\"timestamp\":\"2025-05-31T17:03:14.854Z\"},\"property\":{\"id\":null,\"available_properties\":[{\"id\":\"11111111-1111-1111-1111-111111111111\",\"name\":\"Verde Valley Farm\",\"description\":\"Primary microgreens production facility with 6 growing rooms and automated climate control.\",\"location\":\"0101000020E6100000DBF97E6ABC045CC065AA6054526F4140\",\"address\":{\"city\":\"Sedona\",\"state\":\"Arizona\",\"street\":\"1234 Farm Road\",\"country\":\"USA\",\"postal_code\":\"86336\"},\"timezone\":\"America/Phoenix\",\"settings\":{\"growing_rooms\":6,\"automated_climate\":true,\"delivery_radius_km\":50,\"production_capacity\":\"500_trays_weekly\"},\"metadata\":{\"specialty\":\"restaurant_supply\",\"established\":\"2023-01-15\",\"certifications\":[\"organic\",\"gap\"]},\"created_at\":\"2025-05-30T20:32:12.131224+00:00\",\"updated_at\":\"2025-05-30T20:32:12.131224+00:00\",\"is_active\":true}]},\"system\":{\"platform\":\"verding\",\"version\":\"0.1.0\",\"capabilities\":[\"property_management\",\"sowing_tracking\",\"harvest_planning\",\"customer_management\",\"order_processing\"]}}",
+          "created_at": "2025-05-31T17:04:04.871924+00:00"
+        }
+      }
+    ],
+    "OpenAI": [
+      {
+        "json": {
+          "id": "chatcmpl-BdJtzXcXbvXOEo0C0OG8OaVwgCXwO",
+          "object": "chat.completion",
+          "created": 1748710995,
+          "model": "gpt-4.1-mini-2025-04-14",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": {
+                  "response": "Hello! How can I assist you with your microgreens farm today? You can manage properties, track sowing and harvests, handle customers, or manage orders. What would you like to do?"
+                },
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 444,
+            "completion_tokens": 47,
+            "total_tokens": 491,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_6f2eabb9a5"
+        }
+      }
+    ],
+    "Respond to Webhook": [
+      {
+        "json": {
+          "id": "34f73fc5-070a-4df9-808f-806f37c943e9",
+          "user_id": "a546fb65-18f8-4c62-9c50-6c705e82c525",
+          "property_id": null,
+          "session_id": null,
+          "chat_id": null,
+          "channel": "web",
+          "role": "assistant",
+          "content": "{\"response\":\"Hello! How can I assist you with your microgreens farm today? You can manage properties, track sowing and harvests, handle customers, or manage orders. What would you like to do?\"}",
+          "embedding": null,
+          "message_index": null,
+          "metadata": "{\"user\":{\"id\":\"a546fb65-18f8-4c62-9c50-6c705e82c525\",\"message\":\"hi\",\"timestamp\":\"2025-05-31T17:03:14.854Z\"},\"property\":{\"id\":null,\"available_properties\":[{\"id\":\"11111111-1111-1111-1111-111111111111\",\"name\":\"Verde Valley Farm\",\"description\":\"Primary microgreens production facility with 6 growing rooms and automated climate control.\",\"location\":\"0101000020E6100000DBF97E6ABC045CC065AA6054526F4140\",\"address\":{\"city\":\"Sedona\",\"state\":\"Arizona\",\"street\":\"1234 Farm Road\",\"country\":\"USA\",\"postal_code\":\"86336\"},\"timezone\":\"America/Phoenix\",\"settings\":{\"growing_rooms\":6,\"automated_climate\":true,\"delivery_radius_km\":50,\"production_capacity\":\"500_trays_weekly\"},\"metadata\":{\"specialty\":\"restaurant_supply\",\"established\":\"2023-01-15\",\"certifications\":[\"organic\",\"gap\"]},\"created_at\":\"2025-05-30T20:32:12.131224+00:00\",\"updated_at\":\"2025-05-30T20:32:12.131224+00:00\",\"is_active\":true}]},\"system\":{\"platform\":\"verding\",\"version\":\"0.1.0\",\"capabilities\":[\"property_management\",\"sowing_tracking\",\"harvest_planning\",\"customer_management\",\"order_processing\"]}}",
+          "created_at": "2025-05-31T17:04:04.871924+00:00"
+        }
+      }
+    ],
+    "Merge": [
+      {
+        "json": {
+          "id": "34f73fc5-070a-4df9-808f-806f37c943e9",
+          "user_id": "a546fb65-18f8-4c62-9c50-6c705e82c525",
+          "property_id": null,
+          "session_id": null,
+          "chat_id": null,
+          "channel": "web",
+          "role": "assistant",
+          "content": "{\"response\":\"Hello! How can I assist you with your microgreens farm today? You can manage properties, track sowing and harvests, handle customers, or manage orders. What would you like to do?\"}",
+          "embedding": null,
+          "message_index": null,
+          "metadata": "{\"user\":{\"id\":\"a546fb65-18f8-4c62-9c50-6c705e82c525\",\"message\":\"hi\",\"timestamp\":\"2025-05-31T17:03:14.854Z\"},\"property\":{\"id\":null,\"available_properties\":[{\"id\":\"11111111-1111-1111-1111-111111111111\",\"name\":\"Verde Valley Farm\",\"description\":\"Primary microgreens production facility with 6 growing rooms and automated climate control.\",\"location\":\"0101000020E6100000DBF97E6ABC045CC065AA6054526F4140\",\"address\":{\"city\":\"Sedona\",\"state\":\"Arizona\",\"street\":\"1234 Farm Road\",\"country\":\"USA\",\"postal_code\":\"86336\"},\"timezone\":\"America/Phoenix\",\"settings\":{\"growing_rooms\":6,\"automated_climate\":true,\"delivery_radius_km\":50,\"production_capacity\":\"500_trays_weekly\"},\"metadata\":{\"specialty\":\"restaurant_supply\",\"established\":\"2023-01-15\",\"certifications\":[\"organic\",\"gap\"]},\"created_at\":\"2025-05-30T20:32:12.131224+00:00\",\"updated_at\":\"2025-05-30T20:32:12.131224+00:00\",\"is_active\":true}]},\"system\":{\"platform\":\"verding\",\"version\":\"0.1.0\",\"capabilities\":[\"property_management\",\"sowing_tracking\",\"harvest_planning\",\"customer_management\",\"order_processing\"]}}",
+          "created_at": "2025-05-31T17:04:04.871924+00:00"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Agent Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Properties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Agent Context": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log User Message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Properties": {
+      "main": [
+        [
+          {
+            "node": "Prepare Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Log User Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1d670aa8-4275-48c9-b9f7-71c755dd198e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f063a03c3c4f995da15bf84766c9adbe3d5a468b5a2f620f2cc4d5f1d7952de"
+  },
+  "id": "BdHVKHQvO4Wb1R2X",
+  "tags": []
+}

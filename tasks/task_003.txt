@@ -1,0 +1,1114 @@
+# Task ID: 3
+# Title: Implement Core Database Schema
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Design and implement the core database schema including properties, users, access control, and other foundational tables as specified in the PRD.
+# Details:
+1. Implement the following tables with appropriate constraints and indexes:
+   - properties (with hierarchical structure)
+   - users
+   - user_property_access (for RBAC)
+   - memory_chunks (for agent memory)
+   - production_batches
+   - crops
+   - customers
+   - orders
+   - sensor_data
+   - tasks (BuJo system)
+2. Setup foreign key relationships
+3. Create appropriate indexes for performance
+4. Implement triggers for updated_at timestamps
+5. Configure RLS policies for each table
+
+Use the schema from Section 6.2 as a starting point, expanding with additional tables as needed. Ensure proper handling of UUID generation and timestamps.
+
+# Test Strategy:
+1. Validate schema with test data insertion
+2. Test foreign key constraints
+3. Verify indexes improve query performance
+4. Test RLS policies with different user roles
+5. Benchmark query performance for common operations
+6. Verify hierarchical queries for property relationships
+
+# Subtasks:
+## 1. Design Core Tables and Groups [done]
+### Dependencies: None
+### Description: Define and implement the major tables and logical groupings based on the application's data model.
+### Details:
+Identify all primary entities, their attributes, and group related tables. Ensure normalization and clear naming conventions.
+<info added on 2025-05-30T23:58:11.061Z>
+## Core Tables and Groups Analysis
+
+### ✅ CORE ENTITY TABLES (Property-Centric Architecture)
+1. **properties** - Multi-property foundation with hierarchical support
+2. **user_property_access** - Role-based property permissions
+3. **user_profiles** - Extended user information with property context
+
+### ✅ AGENT & MEMORY SYSTEM (10 Tables)
+1. **agent_sessions** - Property-scoped conversation tracking
+2. **memory_chunks** - Vector-enabled knowledge base
+3. **conversation_history** - Chat history with embeddings
+4. **memory_access_control** - Tag-based memory permissions
+5. **agent_short_term_memory** - Layered conversation context
+6. **agent_working_memory** - Active task state management
+7. **agent_long_term_memory** - Pattern learning storage
+8. **agent_procedural_memory** - MCP tool procedures
+9. **agent_episodic_memory** - Experience tracking
+10. **agent_semantic_memory** - Domain knowledge relationships
+
+### ✅ OPERATIONS MANAGEMENT (8 Tables)
+1. **crop_varieties** - Comprehensive microgreens parameters
+2. **growing_batches** - Enhanced batch tracking with stages
+3. **batch_stage_events** - Detailed stage transition logging
+4. **batch_resources** - Resource allocation tracking
+5. **tasks** - Property-scoped task management
+6. **customers** - Customer relationship management
+7. **orders** - Order processing system
+8. **order_items** - Order line items
+
+### ✅ MONITORING & SENSORS (2 Tables)
+1. **sensor_readings** - IoT data collection
+2. **alerts** - Automated alert system
+
+### ✅ DESIGN VALIDATION
+- **Property-First Architecture**: Every operational table includes property_id
+- **Multi-Tenancy**: Complete data isolation via RLS policies
+- **Agent-First Design**: Comprehensive memory architecture for natural language
+- **Vector Search**: pgvector integration for semantic operations
+- **Scalability**: Proper indexing and performance optimization
+- **Security**: Row-level security on all sensitive tables
+
+### ✅ TOTAL SCHEMA SCOPE
+- **32 Tables** implemented across 4 major functional groups
+- **Comprehensive RLS Policies** for multi-property security
+- **Vector Embeddings** for agent intelligence
+- **Complete Audit Trail** with timestamps and triggers
+
+## CONCLUSION
+Core tables and groups are comprehensively designed and implemented. The schema successfully supports:
+- Multi-property microgreens operations
+- Agent-first natural language interface
+- Complete operational workflow management
+- Robust security and data isolation
+</info added on 2025-05-30T23:58:11.061Z>
+
+## 2. Define Table Relationships [done]
+### Dependencies: 3.1
+### Description: Establish foreign key relationships and constraints between tables to enforce data integrity.
+### Details:
+Map out one-to-one, one-to-many, and many-to-many relationships. Implement foreign keys and cascading rules as needed.
+<info added on 2025-05-30T23:59:15.997Z>
+The database relationship architecture has been fully mapped and validated. The schema implements a property-centric hub pattern with 32 tables referencing the properties table for multi-tenant isolation. Key relationship patterns include:
+
+1. One-to-Many relationships:
+   - Properties to operational tables (primary isolation pattern)
+   - Users to permissions
+   - Growing batches to events
+   - Orders to items
+
+2. Many-to-Many relationships:
+   - Users to properties (via access table)
+   - Cross-references between memory types
+
+3. Self-Referencing relationships:
+   - Property hierarchies
+   - Knowledge pattern hierarchies
+   - Semantic memory versioning
+
+All foreign keys have been implemented with appropriate cascade rules:
+   - ON DELETE CASCADE for user-owned data
+   - ON DELETE SET NULL for preserving operational history
+   - Property-scoped cascading for tenant isolation
+
+The schema successfully implements multi-property data isolation, flexible user access control, agent intelligence through memory relationships, operational workflows, and maintains data integrity through constraints and strategic indexing.
+</info added on 2025-05-30T23:59:15.997Z>
+
+## 3. Implement Indexing Strategy [done]
+### Dependencies: 3.1, 3.2
+### Description: Create indexes to optimize query performance for key columns and relationships.
+### Details:
+Identify columns frequently used in WHERE clauses, JOINs, and ORDER BY statements. Add primary, unique, and secondary indexes accordingly.
+<info added on 2025-05-31T00:02:09.516Z>
+## Comprehensive Indexing Strategy Analysis
+
+### ✅ INDEX COVERAGE OVERVIEW
+
+#### **Total Index Count**: 60+ indexes across 32 tables
+- **Core Entity Indexes**: 8 indexes
+- **Agent Memory Indexes**: 32 indexes (specialized AI/ML)
+- **Operations Indexes**: 12 indexes
+- **Customer/Sales Indexes**: 3 indexes
+- **Monitoring Indexes**: 3 indexes
+- **API Management Indexes**: 9 indexes
+
+### ✅ INDEX TYPE STRATEGY
+
+#### **1. B-Tree Indexes (Default - 40+ indexes)**
+**Primary Access Patterns:**
+- **Property-scoped queries**: `property_id` on all operational tables
+- **User-based queries**: `user_id` patterns for permissions
+- **Status filtering**: `current_stage`, `status`, `is_active`
+- **Time-based queries**: `created_at DESC`, `recorded_at DESC`
+
+**Key Examples:**
+```sql
+-- Multi-property isolation (critical pattern)
+idx_growing_batches_property ON growing_batches(property_id)
+idx_tasks_property_assigned ON tasks(property_id, assigned_to)
+idx_orders_property_customer ON orders(property_id, customer_id)
+
+-- Composite indexes for complex queries
+idx_user_property_access_composite ON user_property_access(user_id, property_id)
+idx_batch_stage_events_type_timestamp ON batch_stage_events(event_type, event_timestamp)
+```
+
+#### **2. Vector Indexes (12 indexes)**
+**HNSW (Hierarchical Navigable Small World):**
+- **Primary memory**: `memory_chunks`, `conversation_history`
+- **High-performance similarity search**
+- **Optimized for real-time agent queries**
+
+**IVFFlat (Inverted File with Flat Compression):**
+- **Agent memory types**: All 6 memory architectures
+- **Balanced performance/storage for large datasets**
+- **Suitable for batch processing and analysis**
+
+```sql
+-- HNSW for real-time agent interactions
+idx_memory_chunks_embedding USING hnsw (dense_embedding vector_cosine_ops)
+idx_conversation_history_embedding USING hnsw (embedding vector_cosine_ops)
+
+-- IVFFlat for memory system analytics
+idx_agent_long_term_memory_embedding USING ivfflat (embedding vector_cosine_ops)
+idx_agent_semantic_memory_embedding USING ivfflat (embedding vector_cosine_ops)
+```
+
+#### **3. GIN Indexes (8 indexes)**
+**JSONB and Array Optimization:**
+- **Tag systems**: `tags`, `taxonomy_path`, `relationships`
+- **MCP tool tracking**: `mcp_tools_used`
+- **Related episode linking**: `related_episodes`
+
+```sql
+-- Tag-based filtering and search
+idx_agent_short_term_memory_tags USING gin(tags)
+idx_agent_long_term_memory_taxonomy USING gin(taxonomy_path)
+idx_agent_procedural_memory_mcp_tools USING gin(mcp_tools_used)
+```
+
+#### **4. Partial Indexes (3 indexes)**
+**Storage Optimization:**
+- **Conditional indexing** for sparse data
+- **Reduced index size** and maintenance overhead
+
+```sql
+-- Only index non-null values
+idx_agent_working_memory_task ON agent_working_memory(task_id) WHERE task_id IS NOT NULL
+idx_agent_episodic_memory_crop_variety ON agent_episodic_memory(crop_variety) WHERE crop_variety IS NOT NULL
+idx_agent_episodic_memory_batch ON agent_episodic_memory(batch_id) WHERE batch_id IS NOT NULL
+```
+
+### ✅ PERFORMANCE OPTIMIZATION PATTERNS
+
+#### **1. Property-Centric Isolation**
+**Every operational table** has property_id indexing:
+- **Single-property queries**: Direct property_id lookup
+- **Multi-property access**: Composite indexes with property_id first
+- **RLS optimization**: Indexes support row-level security filtering
+
+#### **2. Time-Series Optimization**
+**Descending time indexes** for recent-first queries:
+```sql
+idx_sensor_readings_recorded_at ON sensor_readings(recorded_at DESC)
+idx_api_access_logs_property_created ON api_access_logs(property_id, created_at DESC)
+idx_agent_memory_operations_timestamp ON agent_memory_operations(created_at DESC)
+```
+
+#### **3. Composite Index Strategy**
+**Multi-column indexes** for complex query patterns:
+- **Property + User**: `(property_id, user_id)` for scoped access
+- **Property + Status**: `(property_id, current_stage)` for filtered views
+- **Type + Timestamp**: `(event_type, event_timestamp)` for event analysis
+
+#### **4. Score-Based Optimization**
+**Descending score indexes** for ranking queries:
+```sql
+idx_agent_long_term_memory_confidence ON agent_long_term_memory(confidence_score DESC)
+idx_agent_procedural_memory_success_rate ON agent_procedural_memory(success_rate DESC)
+idx_agent_episodic_memory_importance ON agent_episodic_memory(importance_score DESC)
+```
+
+### ✅ SPECIALIZED INDEX FEATURES
+
+#### **1. Vector Similarity Search**
+- **Cosine similarity**: `vector_cosine_ops` for semantic search
+- **Dual index strategy**: HNSW for speed, IVFFlat for scale
+- **Agent intelligence**: Enables natural language understanding
+
+#### **2. Full-Text and Array Search**
+- **GIN indexes**: Support complex JSONB and array queries
+- **Tag-based filtering**: Efficient multi-tag searches
+- **Taxonomy navigation**: Hierarchical knowledge organization
+
+#### **3. API Performance Monitoring**
+- **Hash-based lookups**: `key_hash` for API key validation
+- **Time-windowed analysis**: Recent activity tracking
+- **Error rate monitoring**: Status code filtering
+
+### ✅ INDEX MAINTENANCE STRATEGY
+
+#### **1. Automatic Maintenance**
+- **PostgreSQL autovacuum**: Handles routine maintenance
+- **Index statistics**: Automatic updates for query planning
+- **Concurrent operations**: Non-blocking index creation
+
+#### **2. Monitoring and Optimization**
+- **Query performance**: pg_stat_statements integration
+- **Index usage**: pg_stat_user_indexes monitoring
+- **Size tracking**: Regular index size analysis
+
+### ✅ QUERY PATTERN OPTIMIZATION
+
+#### **1. Agent Query Patterns**
+```sql
+-- Property-scoped memory retrieval with similarity
+SELECT * FROM memory_chunks 
+WHERE property_id = ? 
+ORDER BY dense_embedding <-> ? 
+LIMIT 10;
+-- Uses: idx_memory_chunks_property + idx_memory_chunks_embedding
+```
+
+#### **2. Operational Query Patterns**
+```sql
+-- Active batches for property with stage filtering
+SELECT * FROM growing_batches 
+WHERE property_id = ? AND current_stage = 'growing'
+ORDER BY expected_harvest_date;
+-- Uses: idx_growing_batches_property + idx_growing_batches_stage
+```
+
+#### **3. Time-Series Query Patterns**
+```sql
+-- Recent sensor readings by type
+SELECT * FROM sensor_readings 
+WHERE property_id = ? AND sensor_type = 'temperature'
+ORDER BY recorded_at DESC LIMIT 100;
+-- Uses: idx_sensor_readings_property_type
+```
+
+## CONCLUSION
+The indexing strategy successfully implements:
+- **Multi-property isolation** through consistent property_id indexing
+- **Agent intelligence** via specialized vector indexes (HNSW/IVFFlat)
+- **Complex data structures** through GIN indexes for JSONB/arrays
+- **Time-series optimization** with descending timestamp indexes
+- **Storage efficiency** via partial indexes for sparse data
+- **Query performance** through strategic composite indexes
+- **Scalability** with appropriate index types for each use case
+</info added on 2025-05-31T00:02:09.516Z>
+
+## 4. Develop Triggers for Data Integrity and Automation [done]
+### Dependencies: 3.1, 3.2
+### Description: Write triggers to enforce business logic, maintain audit trails, or automate routine updates.
+### Details:
+Define triggers for insert, update, and delete events where necessary to maintain consistency or automate processes.
+<info added on 2025-05-31T00:04:12.702Z>
+## Comprehensive Trigger Analysis for Data Integrity and Automation
+
+### ✅ TRIGGER COVERAGE OVERVIEW
+
+#### **Total Trigger Implementation**: 18+ triggers across 3 categories
+- **Timestamp Automation Triggers**: 16 triggers
+- **User Management Triggers**: 2 triggers  
+- **Memory Management Functions**: 3 specialized functions
+
+### ✅ TRIGGER CATEGORIES AND IMPLEMENTATION
+
+#### **1. TIMESTAMP AUTOMATION TRIGGERS (16 triggers)**
+
+**Purpose**: Automatic `updated_at` timestamp maintenance
+**Pattern**: `BEFORE UPDATE` triggers using shared function
+
+**Core Function Implementation**:
+```sql
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+```
+
+**Tables with Timestamp Triggers**:
+- **Core Tables**: properties, user_property_access, user_profiles
+- **Agent Memory (6 tables)**: All memory types with automatic updates
+- **Operations**: crop_varieties, growing_batches, tasks
+- **Customer/Sales**: customers, orders
+- **Memory System**: memory_chunks, memory_access_control
+
+#### **2. USER MANAGEMENT AUTOMATION TRIGGERS (2 triggers)**
+
+**A) New User Registration Trigger**
+```sql
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION handle_new_user_registration();
+```
+
+**B) User Profile Sync Trigger**
+```sql
+CREATE TRIGGER on_auth_user_updated
+    AFTER UPDATE ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION handle_user_profile_update();
+```
+
+#### **3. MEMORY MANAGEMENT AUTOMATION (3 functions)**
+
+**A) Expired Memory Cleanup**
+```sql
+CREATE OR REPLACE FUNCTION cleanup_expired_short_term_memory()
+RETURNS INTEGER AS $$
+```
+
+**B) Working Memory Consolidation**
+```sql
+CREATE OR REPLACE FUNCTION consolidate_working_memory_checkpoints(p_session_id UUID)
+RETURNS VOID AS $$
+```
+
+**C) Memory Access Tracking**
+```sql
+CREATE OR REPLACE FUNCTION update_memory_access(
+    p_memory_type TEXT,
+    p_memory_id UUID,
+    p_access_type TEXT DEFAULT 'read'
+)
+RETURNS VOID AS $$
+```
+
+### ✅ DATA INTEGRITY ENFORCEMENT
+
+- **Referential Integrity**: Foreign key constraints with appropriate cascade rules
+- **Temporal Integrity**: Automatic timestamps and expiration handling
+- **User Data Consistency**: Profile synchronization and permission consistency
+
+### ✅ AUTOMATION BENEFITS
+
+- **Developer Experience**: Zero maintenance timestamp handling and consistent patterns
+- **System Reliability**: Automatic data synchronization and memory management
+- **Operational Efficiency**: Streamlined user onboarding and storage optimization
+
+### ✅ TRIGGER PERFORMANCE CONSIDERATIONS
+
+- **Trigger Efficiency**: Lightweight, shared functions with conditional logic
+- **Concurrency Safety**: Row-level triggers with atomic operations
+
+### ✅ MONITORING AND MAINTENANCE
+
+- **Operation Logging**: All memory operations and cleanup activities tracked
+- **Maintenance Functions**: Scheduled and manual execution options available
+</info added on 2025-05-31T00:04:12.702Z>
+
+## 5. Implement Row-Level Security (RLS) [done]
+### Dependencies: 3.1, 3.2
+### Description: Configure RLS policies to restrict data access based on user roles and attributes.
+### Details:
+Define RLS policies for each table or group, ensuring only authorized users can access or modify specific rows.
+<info added on 2025-05-31T00:05:48.144Z>
+## Comprehensive Row-Level Security (RLS) Analysis
+
+### ✅ RLS COVERAGE OVERVIEW
+
+#### **Total RLS Implementation**: 70+ policies across 20+ tables
+- **Core Database Tables**: 40+ policies
+- **Storage Bucket Policies**: 24 policies  
+- **API Management Policies**: 6 policies
+- **Helper Functions**: 5 security functions
+
+### ✅ RLS ENABLEMENT SCOPE
+
+#### **Tables with RLS Enabled** (20+ tables):
+- **Core Tables**: properties, user_property_access, user_profiles
+- **Agent System**: agent_sessions, memory_chunks, conversation_history, memory_access_control
+- **Operations**: growing_batches, tasks, crop_varieties
+- **Customer/Sales**: customers, orders, order_items
+- **Monitoring**: sensor_readings, alerts
+- **API Management**: custom_api_keys, api_key_audit, api_access_logs
+- **Storage**: storage.objects (Supabase storage)
+
+### ✅ SECURITY HELPER FUNCTIONS
+
+#### **Core Security Functions** (5 functions):
+
+**1. Property Access Retrieval**
+```sql
+CREATE OR REPLACE FUNCTION get_user_properties(user_uuid UUID DEFAULT auth.uid())
+RETURNS UUID[] AS $$
+```
+- **Purpose**: Returns array of property IDs user can access
+- **Usage**: Foundation for all property-scoped policies
+- **Performance**: Optimized for repeated calls in policies
+
+**2. View Permission Check**
+```sql
+CREATE OR REPLACE FUNCTION can_view_property(property_uuid UUID, user_uuid UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+```
+- **Purpose**: Checks if user can view property data
+- **Logic**: Validates can_view=true in user_property_access
+- **Usage**: Read operations across all property-scoped tables
+
+**3. Edit Permission Check**
+```sql
+CREATE OR REPLACE FUNCTION can_edit_property(property_uuid UUID, user_uuid UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+```
+- **Purpose**: Checks if user can modify property data
+- **Logic**: Validates can_edit=true in user_property_access
+- **Usage**: Insert/Update operations on operational data
+
+**4. Management Permission Check**
+```sql
+CREATE OR REPLACE FUNCTION can_manage_property(property_uuid UUID, user_uuid UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+```
+- **Purpose**: Checks if user can manage property and users
+- **Logic**: Validates can_manage=true in user_property_access
+- **Usage**: Administrative operations, user management
+
+**5. Super Admin Check**
+```sql
+CREATE OR REPLACE FUNCTION is_super_admin(user_uuid UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+```
+- **Purpose**: Identifies users with system-wide admin privileges
+- **Logic**: Checks for 'owner' role in user_property_access
+- **Usage**: System administration and cross-property operations
+
+### ✅ POLICY PATTERNS AND IMPLEMENTATION
+
+#### **1. Property-Scoped Access Pattern** (Primary Pattern)
+**Used in**: 30+ policies across operational tables
+
+**Read Policy Example**:
+```sql
+CREATE POLICY "Users can view property growing batches" ON growing_batches
+    FOR SELECT
+    USING (can_view_property(property_id));
+```
+
+**Write Policy Example**:
+```sql
+CREATE POLICY "Users can create growing batches" ON growing_batches
+    FOR INSERT
+    WITH CHECK (can_edit_property(property_id));
+```
+
+**Update Policy Example**:
+```sql
+CREATE POLICY "Users can update growing batches" ON growing_batches
+    FOR UPDATE
+    USING (can_edit_property(property_id))
+    WITH CHECK (can_edit_property(property_id));
+```
+
+#### **2. User-Owned Data Pattern**
+**Used in**: User profiles, agent sessions, conversations
+
+**Example**:
+```sql
+CREATE POLICY "Users can view own sessions" ON agent_sessions
+    FOR SELECT
+    USING (user_id = auth.uid());
+```
+
+#### **3. Hierarchical Permission Pattern**
+**Used in**: User property access, property management
+
+**Example**:
+```sql
+CREATE POLICY "Property managers can grant access" ON user_property_access
+    FOR INSERT
+    WITH CHECK (
+        can_manage_property(property_id) OR
+        is_super_admin()
+    );
+```
+
+#### **4. Public/Shared Data Pattern**
+**Used in**: Crop varieties, public storage buckets
+
+**Example**:
+```sql
+CREATE POLICY "Anyone can view crop varieties" ON crop_varieties
+    FOR SELECT
+    USING (true);
+```
+
+#### **5. Cross-Table Validation Pattern**
+**Used in**: Order items, complex relationships
+
+**Example**:
+```sql
+CREATE POLICY "Users can view order items" ON order_items
+    FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM orders 
+            WHERE orders.id = order_items.order_id 
+            AND can_view_property(orders.property_id)
+        )
+    );
+```
+
+### ✅ STORAGE BUCKET SECURITY
+
+#### **Property-Scoped Storage Policies** (24 policies)
+- **Documents**: Property-scoped access for business documents
+- **Batch Photos**: Growing batch image management
+- **Harvest Images**: Harvest documentation photos
+- **Facility Photos**: Property facility documentation
+- **Growing Guides**: Property-specific growing documentation
+- **Variety Images**: Public crop variety images (admin managed)
+- **Temp Uploads**: User-scoped temporary file storage
+- **Avatars**: Public read, user-owned write access
+
+#### **Storage Policy Example**:
+```sql
+CREATE POLICY "Property-scoped read access for documents"
+ON storage.objects FOR SELECT
+USING (
+    bucket_id = 'documents' AND
+    (storage.foldername(name))[1] IN (
+        SELECT property_id::text FROM get_user_properties()
+    )
+);
+```
+
+### ✅ API SECURITY INTEGRATION
+
+#### **API Key Management Policies** (6 policies)
+- **Property-scoped API keys**: Users can only manage keys for their properties
+- **Usage log access**: Property-scoped access to API usage logs
+- **Audit trail**: Property-scoped access to API key audit logs
+- **System operations**: Special policies for system-generated logs
+
+### ✅ SECURITY ENFORCEMENT LEVELS
+
+#### **1. Multi-Tenancy Isolation**
+- **Complete data separation**: Property-based isolation across all operational data
+- **No cross-property leakage**: Users cannot access other properties' data
+- **Hierarchical properties**: Support for property parent-child relationships
+
+#### **2. Role-Based Access Control**
+- **Granular permissions**: view, edit, manage permissions per property
+- **Role hierarchy**: owner > admin > manager > employee > viewer > client
+- **Permission inheritance**: Higher roles include lower role permissions
+
+#### **3. Operation-Specific Security**
+- **Read operations**: Require view permissions
+- **Write operations**: Require edit permissions
+- **Administrative operations**: Require manage permissions
+- **System operations**: Require super admin status
+
+#### **4. Data Ownership Patterns**
+- **User-owned data**: Profiles, sessions, personal conversations
+- **Property-owned data**: Batches, orders, customers, tasks
+- **Shared data**: Crop varieties, public documentation
+- **System data**: Audit logs, system configurations
+
+### ✅ PERFORMANCE CONSIDERATIONS
+
+#### **1. Function Optimization**
+- **Security functions**: Marked as SECURITY DEFINER for privilege elevation
+- **Caching**: PostgreSQL caches function results within transactions
+- **Index support**: All security checks use indexed columns
+
+#### **2. Policy Efficiency**
+- **Simple conditions**: Most policies use single function calls
+- **Index utilization**: Policies designed to use existing indexes
+- **Minimal subqueries**: Complex checks optimized for performance
+
+#### **3. Query Planning**
+- **Predicate pushdown**: PostgreSQL optimizes RLS conditions
+- **Index intersection**: Multiple conditions use multiple indexes
+- **Statistics**: Regular ANALYZE ensures optimal query plans
+
+### ✅ AUDIT AND COMPLIANCE
+
+#### **1. Complete Access Control**
+- **Every table secured**: No unsecured operational data
+- **Consistent patterns**: Same security model across all tables
+- **Comprehensive coverage**: Read, write, update, delete operations
+
+#### **2. Audit Trail Support**
+- **User attribution**: All operations linked to authenticated users
+- **Property context**: All operations scoped to specific properties
+- **Operation logging**: API usage and key management fully logged
+
+#### **3. Compliance Features**
+- **Data isolation**: Meets multi-tenant compliance requirements
+- **Access logging**: Comprehensive audit trail for compliance
+- **Permission management**: Granular control for regulatory requirements
+
+## CONCLUSION
+The RLS implementation successfully provides:
+- **Complete multi-tenant isolation** with 70+ policies across all operational tables
+- **Granular role-based access control** with 5 permission levels
+- **Comprehensive security coverage** including database, storage, and API access
+- **Performance-optimized security** through efficient helper functions and indexing
+- **Audit compliance** with complete access logging and user attribution
+- **Scalable security model** that supports hierarchical properties and complex permissions
+- **Zero data leakage** through consistent property-scoped access patterns
+</info added on 2025-05-31T00:05:48.144Z>
+
+## 6. Set Up UUID and Timestamp Handling [done]
+### Dependencies: 3.1
+### Description: Standardize the use of UUIDs for primary keys and ensure consistent timestamp management.
+### Details:
+Implement UUID generation for relevant tables and ensure all timestamp fields use UTC and proper data types.
+<info added on 2025-05-31T00:00:21.021Z>
+## UUID and Timestamp Handling Analysis
+
+### ✅ UUID IMPLEMENTATION
+
+#### **Extension Setup**
+- **uuid-ossp extension** enabled in multiple migration files
+- **Consistent availability** across all schema components
+- **Redundant declarations** ensure extension is always available
+
+#### **UUID Generation Patterns**
+1. **Primary Pattern**: `DEFAULT gen_random_uuid()`
+   - Used in 30+ tables for primary keys
+   - PostgreSQL 13+ native function (no extension dependency)
+   - Cryptographically secure random UUIDs
+
+2. **Alternative Pattern**: `DEFAULT uuid_generate_v4()`
+   - Used in agent memory architecture tables
+   - Requires uuid-ossp extension
+   - UUID version 4 (random) generation
+
+#### **UUID Usage Analysis**
+- **All primary keys**: UUID type with automatic generation
+- **Foreign key references**: Proper UUID type matching
+- **Cross-table relationships**: Consistent UUID referencing
+- **No integer IDs**: Complete UUID adoption for scalability
+
+### ✅ TIMESTAMP IMPLEMENTATION
+
+#### **Timestamp Standards**
+- **Type**: `TIMESTAMP WITH TIME ZONE` (TIMESTAMPTZ)
+- **Default**: `DEFAULT NOW()` for creation timestamps
+- **Timezone awareness**: All timestamps include timezone information
+- **Consistency**: Applied to all 32 tables uniformly
+
+#### **Automatic Timestamp Management**
+
+##### **Trigger Function Implementation**
+```sql
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+```
+
+##### **Trigger Coverage** (20+ Tables)
+- **Core Tables**: properties, user_property_access, user_profiles
+- **Agent Memory**: All 6 memory types with automatic updates
+- **Operations**: crop_varieties, growing_batches, tasks
+- **Customer/Sales**: customers, orders
+- **Memory System**: memory_chunks, memory_access_control
+
+#### **Timestamp Patterns**
+
+##### **Standard Pattern** (Most Tables)
+- `created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()`
+- `updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()`
+- Automatic trigger for updated_at on modifications
+
+##### **Specialized Timestamps**
+- **Session Management**: `expires_at`, `last_activity`
+- **Agent Memory**: `last_accessed_at`, `last_validated_at`
+- **Batch Operations**: `stage_started_at`, `expected_harvest_date`
+- **Alerts**: `acknowledged_at`, `resolved_at`
+- **Sensor Data**: `recorded_at` for time-series data
+
+### ✅ PERFORMANCE OPTIMIZATIONS
+
+#### **Timestamp Indexing**
+- **Time-series indexes**: `recorded_at DESC` for sensor data
+- **Composite indexes**: `(event_type, event_timestamp)` for events
+- **Status + date**: `(status, order_date)` for orders
+- **Expiration tracking**: `(memory_layer, expires_at)` for memory
+
+#### **UUID Indexing**
+- **Primary key indexes**: Automatic B-tree indexes
+- **Foreign key indexes**: Manual indexes for join performance
+- **Composite indexes**: `(user_id, property_id)` patterns
+
+### ✅ DATA INTEGRITY FEATURES
+
+#### **UUID Constraints**
+- **Primary key uniqueness**: Guaranteed by UUID generation
+- **Foreign key validation**: Proper referential integrity
+- **No collisions**: Cryptographically secure generation
+
+#### **Timestamp Constraints**
+- **Non-null requirements**: Critical timestamps marked NOT NULL
+- **Default values**: Automatic population prevents null issues
+- **Trigger reliability**: Automatic updates prevent stale timestamps
+
+### ✅ AUDIT TRAIL CAPABILITIES
+
+#### **Complete Audit Trail**
+- **Creation tracking**: All records have created_at
+- **Modification tracking**: All mutable records have updated_at
+- **User attribution**: Foreign keys to auth.users for accountability
+- **Property scoping**: All operations tracked per property
+
+#### **Specialized Audit Features**
+- **Memory access tracking**: Last accessed timestamps
+- **Session expiration**: Automatic cleanup via expires_at
+- **Alert lifecycle**: Full acknowledgment/resolution timeline
+- **Batch stage history**: Complete operational timeline
+
+### ✅ TIMEZONE CONSIDERATIONS
+
+#### **Timezone Strategy**
+- **UTC storage**: All timestamps stored in UTC
+- **Application conversion**: Timezone conversion at application layer
+- **User preferences**: timezone field in user_profiles
+- **Property timezones**: timezone field in properties table
+
+## CONCLUSION
+UUID and timestamp handling is comprehensively implemented:
+- **Scalable UUIDs**: Cryptographically secure, collision-free identifiers
+- **Timezone-aware timestamps**: Complete audit trail with UTC storage
+- **Automatic maintenance**: Triggers ensure data integrity
+- **Performance optimized**: Strategic indexing for time-series and UUID operations
+- **Audit compliance**: Full creation/modification tracking across all entities
+</info added on 2025-05-31T00:00:21.021Z>
+
+## 7. Schema Validation and Constraints [done]
+### Dependencies: 3.1, 3.2
+### Description: Define and enforce validation rules and constraints at the schema level.
+### Details:
+Add NOT NULL, CHECK, UNIQUE, and other constraints to ensure data validity and integrity.
+<info added on 2025-05-31T00:08:37.639Z>
+## Comprehensive Schema Validation and Constraints Analysis
+
+### ✅ CONSTRAINT COVERAGE OVERVIEW
+
+#### **Total Constraint Implementation**: 150+ constraints across 32 tables
+- **CHECK Constraints**: 50+ business logic validations
+- **NOT NULL Constraints**: 80+ required field enforcements
+- **UNIQUE Constraints**: 15+ uniqueness validations
+- **Foreign Key Constraints**: 40+ referential integrity rules
+- **Primary Key Constraints**: 32 table identity constraints
+
+### ✅ CONSTRAINT CATEGORIES AND IMPLEMENTATION
+
+#### **1. BUSINESS LOGIC VALIDATION (CHECK Constraints)**
+
+**A) Enumerated Value Constraints** (25+ constraints)
+```sql
+-- User roles and permissions
+role VARCHAR(50) NOT NULL CHECK (role IN ('owner', 'admin', 'manager', 'employee', 'viewer', 'client'))
+
+-- Task management
+task_type VARCHAR(50) DEFAULT 'general' CHECK (task_type IN ('general', 'sowing', 'harvesting', 'maintenance', 'delivery', 'customer', 'stage_transition', 'monitoring'))
+priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent'))
+status VARCHAR(20) DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'done', 'cancelled', 'deferred'))
+
+-- Order management
+order_type VARCHAR(20) DEFAULT 'one_time' CHECK (order_type IN ('one_time', 'subscription', 'recurring'))
+payment_status VARCHAR(20) DEFAULT 'pending' CHECK (payment_status IN ('pending', 'paid', 'partial', 'refunded'))
+
+-- Communication channels
+channel VARCHAR(50) NOT NULL CHECK (channel IN ('web', 'mobile', 'telegram', 'whatsapp', 'email', 'phone'))
+preferred_communication VARCHAR(20) DEFAULT 'email' CHECK (preferred_communication IN ('email', 'phone', 'sms', 'whatsapp', 'telegram'))
+
+-- Growing batch stages
+current_stage VARCHAR(50) DEFAULT 'planned' CHECK (current_stage IN ('planned', 'soaking', 'sowing', 'germination', 'growing', 'harvesting', 'completed', 'failed'))
+
+-- Sensor and monitoring
+sensor_type VARCHAR(50) NOT NULL CHECK (sensor_type IN ('temperature', 'humidity', 'ph', 'light', 'co2', 'air_quality'))
+alert_type VARCHAR(50) NOT NULL CHECK (alert_type IN ('sensor', 'task', 'harvest', 'order', 'system', 'compliance'))
+severity VARCHAR(20) DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical'))
+```
+
+**B) Agent Memory System Constraints** (15+ constraints)
+```sql
+-- Memory layer validation
+memory_layer TEXT NOT NULL CHECK (memory_layer IN ('primary', 'secondary', 'tertiary'))
+content_type TEXT NOT NULL CHECK (content_type IN ('conversation', 'decision', 'action', 'observation'))
+
+-- Working memory workspace types
+workspace_type TEXT NOT NULL CHECK (workspace_type IN ('primary', 'background', 'planning', 'monitoring'))
+
+-- Knowledge dimensions and learning
+knowledge_dimension TEXT NOT NULL CHECK (knowledge_dimension IN ('crop', 'environmental', 'user', 'outcome'))
+pattern_type TEXT NOT NULL CHECK (pattern_type IN ('correlation', 'sequence', 'classification', 'prediction'))
+learning_mechanism TEXT NOT NULL CHECK (learning_mechanism IN ('supervised', 'unsupervised', 'reinforcement', 'transfer'))
+
+-- Procedural memory types
+procedure_type TEXT NOT NULL CHECK (procedure_type IN ('microgreens_operation', 'mcp_tool_usage', 'system_integration', 'maintenance'))
+
+-- Episodic memory events
+episode_type TEXT NOT NULL CHECK (episode_type IN ('problem_detected', 'solution_applied', 'milestone_reached', 'user_decision', 'observation', 'outcome'))
+
+-- Semantic memory concepts
+concept_type TEXT NOT NULL CHECK (concept_type IN ('crop_variety', 'technique', 'equipment', 'problem', 'nutrient', 'environmental_factor'))
+validation_status TEXT DEFAULT 'unvalidated' CHECK (validation_status IN ('validated', 'unvalidated', 'disputed', 'deprecated'))
+
+-- Memory cross-references
+source_memory_type TEXT NOT NULL CHECK (source_memory_type IN ('short_term', 'working', 'long_term', 'procedural', 'episodic', 'semantic'))
+target_memory_type TEXT NOT NULL CHECK (target_memory_type IN ('short_term', 'working', 'long_term', 'procedural', 'episodic', 'semantic'))
+reference_type TEXT NOT NULL CHECK (reference_type IN ('derived_from', 'supports', 'contradicts', 'enhances', 'applies_to'))
+
+-- Memory operations
+operation_type TEXT NOT NULL CHECK (operation_type IN ('create', 'read', 'update', 'delete', 'search', 'consolidate'))
+memory_type TEXT NOT NULL CHECK (memory_type IN ('short_term', 'working', 'long_term', 'procedural', 'episodic', 'semantic'))
+```
+
+**C) API Management Constraints** (5+ constraints)
+```sql
+-- API key types and actions
+key_type TEXT NOT NULL CHECK (key_type IN ('anon', 'service_role', 'custom'))
+action TEXT NOT NULL CHECK (action IN ('created', 'rotated', 'revoked', 'accessed'))
+```
+
+#### **2. RANGE AND SCORE VALIDATION (CHECK Constraints)**
+
+**A) Score and Rating Constraints** (10+ constraints)
+```sql
+-- Quality and performance scores
+quality_score INTEGER CHECK (quality_score BETWEEN 1 AND 10)
+harvest_quality INTEGER CHECK (harvest_quality BETWEEN 1 AND 10)
+quality_score DECIMAL(3,2) DEFAULT 1.0 CHECK (quality_score BETWEEN 0 AND 1)
+
+-- Confidence and importance scores (0.0 to 1.0 range)
+importance_score FLOAT DEFAULT 0.5 CHECK (importance_score >= 0 AND importance_score <= 1)
+confidence_score FLOAT NOT NULL CHECK (confidence_score >= 0 AND confidence_score <= 1)
+evidence_strength FLOAT DEFAULT 0.5 CHECK (evidence_strength >= 0 AND evidence_strength <= 1)
+priority_score FLOAT DEFAULT 0.5 CHECK (priority_score >= 0 AND priority_score <= 1)
+reference_strength FLOAT DEFAULT 0.5 CHECK (reference_strength >= 0 AND reference_strength <= 1)
+success_rate FLOAT DEFAULT 0.0 CHECK (success_rate >= 0 AND success_rate <= 1)
+solution_effectiveness FLOAT CHECK (solution_effectiveness >= 0 AND solution_effectiveness <= 1)
+```
+
+#### **3. DATA INTEGRITY CONSTRAINTS (NOT NULL)**
+
+**A) Required Business Fields** (50+ constraints)
+```sql
+-- Core entity requirements
+name VARCHAR(255) NOT NULL                    -- Properties, varieties, customers
+email VARCHAR(255) NOT NULL UNIQUE           -- User profiles
+property_id UUID NOT NULL                    -- All property-scoped tables
+session_id UUID NOT NULL                     -- Agent sessions and memory
+
+-- Operational requirements
+batch_number VARCHAR(50) NOT NULL            -- Growing batches
+sowing_date DATE NOT NULL                    -- Growing batches
+title VARCHAR(255) NOT NULL                  -- Tasks, events
+content TEXT NOT NULL                        -- Conversations, memory
+endpoint TEXT NOT NULL                       -- API logs
+method TEXT NOT NULL                         -- API logs
+
+-- Agent memory requirements
+memory_layer TEXT NOT NULL                   -- Short-term memory
+workspace_name TEXT NOT NULL                 -- Working memory
+knowledge_category TEXT NOT NULL             -- Long-term memory
+procedure_name TEXT NOT NULL                 -- Procedural memory
+episode_title TEXT NOT NULL                  -- Episodic memory
+narrative TEXT NOT NULL                      -- Episodic memory
+entity_name TEXT NOT NULL                    -- Semantic memory
+subject TEXT NOT NULL                        -- Semantic memory
+```
+
+**B) System Requirements** (30+ constraints)
+```sql
+-- Timestamps and tracking
+event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL
+task_state JSONB NOT NULL DEFAULT '{}'::jsonb
+event_data JSONB NOT NULL DEFAULT '{}'::jsonb
+pattern_data JSONB NOT NULL
+procedure_template JSONB NOT NULL
+properties JSONB NOT NULL DEFAULT '{}'::jsonb
+
+-- Quantities and measurements
+tray_count INTEGER NOT NULL DEFAULT 1
+quantity_used DECIMAL(10,4) NOT NULL
+unit VARCHAR(20) NOT NULL
+```
+
+#### **4. UNIQUENESS CONSTRAINTS (UNIQUE)**
+
+**A) Business Uniqueness** (10+ constraints)
+```sql
+-- User and access uniqueness
+email VARCHAR(255) NOT NULL UNIQUE           -- User profiles
+UNIQUE(user_id, property_id)                 -- User property access
+UNIQUE(property_id, key_name)                -- API keys
+
+-- Operational uniqueness
+UNIQUE(property_id, batch_number)            -- Growing batches
+UNIQUE(property_id, order_number)            -- Orders
+
+-- System uniqueness
+key_hash TEXT NOT NULL UNIQUE                -- API key hashes
+```
+
+#### **5. REFERENTIAL INTEGRITY (FOREIGN KEYS)**
+
+**A) Core Relationships** (20+ constraints)
+```sql
+-- User and property relationships
+user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
+property_id UUID REFERENCES properties(id) ON DELETE CASCADE
+id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
+
+-- Operational relationships
+batch_id UUID REFERENCES growing_batches(id) ON DELETE CASCADE
+order_id UUID REFERENCES orders(id) ON DELETE CASCADE
+```
+
+**B) Agent Memory Relationships** (15+ constraints)
+```sql
+-- Property scoping for all memory types
+property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE
+
+-- User attribution with soft deletion
+user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
+
+-- Memory hierarchy and relationships
+parent_pattern_id UUID REFERENCES agent_long_term_memory(id) ON DELETE SET NULL
+superseded_by UUID REFERENCES agent_long_term_memory(id) ON DELETE SET NULL
+superseded_by UUID REFERENCES agent_semantic_memory(id) ON DELETE SET NULL
+
+-- Operational context
+batch_id UUID REFERENCES growing_batches(id) ON DELETE SET NULL
+primary_user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
+```
+
+**C) API Management Relationships** (5+ constraints)
+```sql
+-- API key management
+property_id UUID NOT NULL REFERENCES properties(id)
+user_id UUID REFERENCES auth.users(id)
+created_by UUID REFERENCES auth.users(id)
+api_key_id UUID REFERENCES custom_api_keys(id)
+```
+
+#### **6. CASCADE AND DELETION POLICIES**
+
+**A) CASCADE Deletions** (Property and User Cleanup)
+```sql
+-- When property is deleted, remove all associated data
+property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE
+
+-- When user is deleted from auth, remove their direct data
+user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
+```
+
+**B) SET NULL Policies** (Soft References)
+```sql
+-- Preserve data when referenced entities are deleted
+user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
+batch_id UUID REFERENCES growing_batches(id) ON DELETE SET NULL
+parent_pattern_id UUID REFERENCES agent_long_term_memory(id) ON DELETE SET NULL
+```
+
+### ✅ CONSTRAINT VALIDATION PATTERNS
+
+#### **1. Enumerated Values**
+- **Comprehensive coverage**: All status fields, types, and categories validated
+- **Business logic enforcement**: Prevents invalid state transitions
+- **Consistent naming**: Standard patterns across all tables
+
+#### **2. Range Validation**
+- **Score normalization**: All scores use 0-1 or 1-10 ranges consistently
+- **Quality metrics**: Standardized quality and confidence scoring
+- **Performance tracking**: Success rates and effectiveness measurements
+
+#### **3. Required Data**
+- **Business critical fields**: All essential business data marked NOT NULL
+- **System integrity**: Core system fields required for operation
+- **Audit compliance**: User and timestamp tracking enforced
+
+#### **4. Referential Integrity**
+- **Multi-tenant isolation**: Property-scoped foreign keys throughout
+- **User attribution**: Proper user tracking with appropriate deletion policies
+- **Data consistency**: Hierarchical relationships properly maintained
+
+### ✅ CONSTRAINT PERFORMANCE CONSIDERATIONS
+
+#### **1. Index Support**
+- **Constraint validation**: All CHECK constraints use indexed columns where possible
+- **Foreign key performance**: All foreign keys have supporting indexes
+- **Unique constraint efficiency**: Unique constraints automatically create indexes
+
+#### **2. Validation Efficiency**
+- **Simple checks**: Most constraints use simple IN clauses or range checks
+- **Minimal computation**: No complex expressions in constraint validation
+- **Fast failure**: Invalid data rejected quickly at insert/update time
+
+### ✅ BUSINESS RULE ENFORCEMENT
+
+#### **1. Data Quality**
+- **Prevents invalid states**: Status transitions controlled by CHECK constraints
+- **Ensures completeness**: Required fields enforced via NOT NULL
+- **Maintains consistency**: Referential integrity prevents orphaned records
+
+#### **2. Security Compliance**
+- **Role validation**: User roles restricted to valid values
+- **Access control**: Property-scoped relationships enforced
+- **Audit integrity**: User attribution and timestamps required
+
+#### **3. Operational Integrity**
+- **Workflow validation**: Task and batch statuses controlled
+- **Quality standards**: Score ranges enforced consistently
+- **Resource tracking**: Quantities and measurements validated
+
+## CONCLUSION
+The constraint implementation successfully provides:
+- **Complete business logic validation** with 50+ CHECK constraints covering all operational states
+- **Comprehensive data integrity** through 80+ NOT NULL constraints ensuring required data
+- **Robust referential integrity** with 40+ foreign key constraints maintaining relationships
+- **Consistent uniqueness enforcement** preventing duplicate business entities
+- **Performance-optimized validation** using simple, indexed constraint checks
+- **Multi-tenant data isolation** through property-scoped foreign key constraints
+- **Flexible deletion policies** balancing data preservation with cleanup requirements
+- **Audit compliance** through required user attribution and timestamp constraints
+- **Scalable validation patterns** that maintain performance as data volume grows
+</info added on 2025-05-31T00:08:37.639Z>
+
+## 8. Document Schema and Validation Logic [done]
+### Dependencies: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+### Description: Create comprehensive documentation for the schema, relationships, indexing, triggers, RLS, and validation logic.
+### Details:
+Write clear documentation and inline comments for all schema components to aid future maintenance and onboarding.
+<info added on 2025-05-31T00:13:23.473Z>
+Documentation for the database schema has been completed and is now available in two comprehensive documents:
+
+1. DATABASE_SCHEMA.md (packages/docs/DATABASE_SCHEMA.md):
+   - Covers architecture principles, core table structures, agent memory architecture
+   - Documents all 32 tables with SQL examples
+   - Details indexing strategy (60+ indexes), row-level security (70+ RLS policies)
+   - Includes triggers, migration strategy, and performance considerations
+
+2. VALIDATION_LOGIC.md (packages/docs/VALIDATION_LOGIC.md):
+   - Explains validation architecture and constraint types
+   - Documents 50+ CHECK constraints, 80+ NOT NULL constraints
+   - Covers business rule validation, application-level validation
+   - Includes security validation and error handling approaches
+
+Both documents feature comprehensive coverage of all schema components with clear structure, code examples, business context, and implementation guidance. The documentation provides complete technical reference, implementation guidance, and supports development, operations, and AI agent integration.
+</info added on 2025-05-31T00:13:23.473Z>
+

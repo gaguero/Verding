@@ -1,0 +1,95 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local", "renovate.json"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "build/**",
+        "out/**"
+      ],
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": true
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": false
+    },
+    "lint:eslint": {
+      "outputs": [],
+      "cache": true
+    },
+    "lint:eslint:fix": {
+      "outputs": [],
+      "cache": false
+    },
+    "lint:prettier": {
+      "outputs": [],
+      "cache": true
+    },
+    "lint:prettier:fix": {
+      "outputs": [],
+      "cache": false
+    },
+    "lint:stylelint": {
+      "outputs": [],
+      "cache": true
+    },
+    "lint:stylelint:fix": {
+      "outputs": [],
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    },
+    "deploy:staging": {
+      "dependsOn": ["build", "test"],
+      "outputs": [],
+      "cache": false
+    },
+    "deploy:production": {
+      "dependsOn": ["build", "test", "lint", "type-check"],
+      "outputs": [],
+      "cache": false
+    }
+  },
+  "remoteCache": {
+    "signature": true
+  }
+}

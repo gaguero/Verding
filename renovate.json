@@ -1,0 +1,130 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "group:monorepos",
+    "group:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":separatePatchReleases"
+  ],
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "assigneesFromCodeOwners": true,
+  "reviewersFromCodeOwners": true,
+  "packageRules": [
+    {
+      "description": "Group all non-major updates together",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "non-major dependencies",
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Separate major updates for careful review",
+      "matchUpdateTypes": ["major"],
+      "schedule": ["before 6am on first day of month"],
+      "labels": ["dependencies", "major-update"],
+      "reviewers": ["team"]
+    },
+    {
+      "description": "Auto-merge patch updates for well-tested packages",
+      "matchUpdateTypes": ["patch"],
+      "matchPackageNames": [
+        "typescript",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "eslint",
+        "prettier"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "merge"
+    },
+    {
+      "description": "Group React ecosystem updates",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "react-router-dom"
+      ],
+      "groupName": "react ecosystem"
+    },
+    {
+      "description": "Group Node.js ecosystem updates",
+      "matchPackageNames": [
+        "node",
+        "@types/node",
+        "express",
+        "@types/express"
+      ],
+      "groupName": "node ecosystem"
+    },
+    {
+      "description": "Group testing framework updates",
+      "matchPackageNames": [
+        "jest",
+        "@types/jest",
+        "vitest",
+        "@testing-library/react",
+        "@testing-library/jest-dom"
+      ],
+      "groupName": "testing frameworks"
+    },
+    {
+      "description": "Group build tool updates",
+      "matchPackageNames": [
+        "turbo",
+        "vite",
+        "@vitejs/plugin-react",
+        "typescript",
+        "tsx"
+      ],
+      "groupName": "build tools"
+    },
+    {
+      "description": "Group linting and formatting tools",
+      "matchPackageNames": [
+        "eslint",
+        "prettier",
+        "stylelint",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint-config-airbnb-typescript",
+        "eslint-config-prettier"
+      ],
+      "groupName": "code quality tools"
+    },
+    {
+      "description": "Group Supabase updates",
+      "matchPackageNames": [
+        "@supabase/supabase-js"
+      ],
+      "groupName": "supabase"
+    },
+    {
+      "description": "Pin internal workspace dependencies",
+      "matchPackageNames": [
+        "@verding/shared",
+        "@verding/backend",
+        "@verding/web",
+        "@verding/mobile"
+      ],
+      "rangeStrategy": "pin",
+      "schedule": "at any time"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": "at any time"
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on sunday"]
+  },
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2
+} 

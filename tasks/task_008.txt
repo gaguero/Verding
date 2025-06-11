@@ -1,0 +1,226 @@
+# Task ID: 8
+# Title: Implement Core Backend API Services
+# Status: pending
+# Dependencies: 3, 4, 6
+# Priority: high
+# Description: Develop the main backend API services that will handle business logic, data management, and serve as the foundation for both the agent and GUI interfaces. Requires collaborative decision-making on key technology choices before implementation.
+# Details:
+**IMPORTANT: This task requires collaborative decision-making on key technology choices before implementation. This task blocks 18 other tasks.**
+
+**BACKEND FRAMEWORK DECISIONS NEEDED:**
+1. **API Framework**: Express vs Fastify vs Koa vs NestJS
+2. **Database ORM**: Prisma vs TypeORM vs Drizzle vs raw SQL
+3. **Validation Library**: Zod vs Joi vs Yup vs class-validator
+4. **Authentication Strategy**: JWT vs Sessions vs OAuth2 flows
+5. **API Documentation**: OpenAPI/Swagger vs GraphQL schema vs custom docs
+
+**ARCHITECTURE DECISIONS NEEDED:**
+1. **API Design Pattern**: RESTful vs GraphQL vs tRPC
+2. **Error Handling**: Custom error classes vs standard HTTP errors
+3. **Logging Strategy**: Winston vs Pino vs console.log with structured format
+4. **Rate Limiting**: Express-rate-limit vs Redis-based vs custom implementation
+
+**TESTING DECISIONS NEEDED:**
+1. **Testing Framework**: Jest vs Vitest vs Mocha
+2. **API Testing**: Supertest vs Postman/Newman vs custom
+3. **Database Testing**: In-memory vs test database vs mocking
+
+**IMPLEMENTATION PLAN (AFTER DECISIONS):**
+1. Setup selected server framework with TypeScript
+2. Implement API structure with versioning (v1)
+3. Create middleware for authentication, logging, error handling
+4. Implement core API endpoints for:
+   - User management
+   - Property management
+   - Basic CRUD operations for all entities
+5. Implement request validation with selected validation library
+6. Setup API documentation with selected documentation approach
+7. Implement rate limiting and security headers
+8. Create logging and monitoring integration
+
+# Test Strategy:
+1. Unit tests for all API endpoints using the selected testing framework
+2. Integration tests for complete flows
+3. Load testing for performance benchmarks
+4. Security testing for common vulnerabilities
+5. Validate API documentation accuracy
+6. Test rate limiting and throttling
+7. Verify logging captures appropriate information
+8. Database testing using the selected testing approach
+
+# Subtasks:
+## 1. Server Environment Setup [done]
+### Dependencies: None
+### Description: Configure the server environment and select appropriate hosting platform for API deployment
+### Details:
+Choose a reliable hosting platform (AWS, Azure, Google Cloud) that guarantees high availability, scalability, and security features. Install necessary server software, configure environment variables, and set up the basic server architecture.
+
+## 2. API Structure and Architecture Design [done]
+### Dependencies: 8.1
+### Description: Define the overall API architecture, response formats, and standardization patterns
+### Details:
+Design the API structure including standardized response formats for both successful responses and errors. Define status codes, timestamps, and data formats (JSON). Create a consistent architecture pattern (RESTful, GraphQL, etc.) and establish naming conventions.
+<info added on 2025-05-31T20:04:46.843Z>
+# Existing API Structure and Architecture Decisions
+
+## API Design & Framework
+- **API Design Pattern**: RESTful API with versioning (`/api/v1/`)
+  - Rationale: Simplicity, broad compatibility, industry familiarity.
+- **API Framework**: Express.js
+  - Rationale: Mature ecosystem, extensive middleware support, performance.
+
+## Database & Data Management
+- **Database ORM**: Prisma
+  - Rationale: Type safety, excellent developer experience, auto-migrations.
+
+## Validation & Security
+- **Validation Library**: Zod
+  - Rationale: TypeScript integration, runtime type checking, schema reusability.
+- **Authentication**: JWT with bcrypt
+  - Rationale: Stateless authentication, scalability, security.
+
+## Documentation & Monitoring
+- **API Documentation**: OpenAPI/Swagger
+  - Rationale: Industry standard, interactive documentation, client generation.
+- **Logging**: Winston
+  - Rationale: Flexible transport options, structured logging, performance.
+
+## Error Handling & Testing
+- **Error Handling**: Custom error classes with standardized response format.
+  - Rationale: Provides better control and consistent user experience.
+- **Testing Framework**: Jest with Supertest.
+  - Rationale: Comprehensive testing capabilities, snapshot testing, mocking.
+</info added on 2025-05-31T20:04:46.843Z>
+
+## 3. Middleware Implementation [done]
+### Dependencies: 8.2
+### Description: Develop middleware components for request processing, authentication, and error handling
+### Details:
+Implement middleware for cross-cutting concerns such as request parsing, CORS handling, authentication verification, rate limiting, and centralized error handling. Ensure middleware is properly sequenced in the request pipeline.
+<info added on 2025-05-31T20:05:26.759Z>
+# Existing Middleware Implementation
+
+- **Security Middleware**: `helmet`
+  - Ensures basic security headers are set.
+- **CORS Handling**: `cors`
+  - Configured to allow cross-origin requests from the frontend.
+- **Rate Limiting**: `express-rate-limit`
+  - Prevents abuse by limiting requests from a single IP.
+- **Compression**: `compression`
+  - Compresses response bodies for faster loading.
+- **Body Parsing**: `express.json` and `express.urlencoded`
+  - Parses incoming request bodies in JSON and URL-encoded formats.
+- **Request Logging**: `requestLogger`
+  - Logs incoming requests for monitoring and debugging.
+- **Authentication & Authorization**: `authenticateToken` and `requirePropertyAccess`
+  - Validates JWT tokens, sets user context, and enforces property-level access control. These are applied to specific routes after global middleware.
+- **Error Handling**: `errorHandler`
+  - Centralized error handling middleware to catch and format errors consistently.
+
+All middleware is properly sequenced in the application pipeline to ensure functionality and security.
+</info added on 2025-05-31T20:05:26.759Z>
+
+## 4. Core Endpoint Development [done]
+### Dependencies: 8.2, 8.3
+### Description: Implement the primary API endpoints with basic functionality
+### Details:
+Develop the core API endpoints following the established architecture. Start with basic functionality for each feature-oriented endpoint, then gradually expand capabilities. Ensure proper routing and controller implementation.
+<info added on 2025-05-31T20:07:23.881Z>
+Core API endpoints have been successfully implemented in `packages/backend/src/index.ts` with route definitions in `packages/backend/src/routes/*.ts`. The base `/api/v1` endpoint is functional and returns a JSON object listing all available endpoints, confirming proper routing implementation. Initial connectivity issues were diagnosed as client-side problems with PowerShell's `Invoke-WebRequest` alias rather than server issues. Network testing with `Test-NetConnection` to port 3001 verified the server is correctly listening for requests. All basic routing functionality is now operational.
+</info added on 2025-05-31T20:07:23.881Z>
+
+## 5. Input Validation and Error Handling [done]
+### Dependencies: 8.4
+### Description: Implement comprehensive validation for all API inputs and standardized error responses
+### Details:
+Create validation schemas for all API inputs. Implement proper error handling with descriptive error messages and appropriate status codes. Ensure all edge cases are handled gracefully and security vulnerabilities from invalid inputs are mitigated.
+<info added on 2025-05-31T20:08:05.583Z>
+Input validation has been implemented using Zod for schema validation across all API endpoints. A centralized error handling system has been established through the `errorHandler.ts` middleware, which works with custom error classes to provide standardized error responses. The system specifically handles Zod validation errors, Prisma database errors, and various application-specific errors. We've also implemented an `asyncHandler` utility to ensure proper catching and processing of all asynchronous route errors. All API endpoints now return appropriate HTTP status codes and descriptive error messages that are consistent throughout the application.
+</info added on 2025-05-31T20:08:05.583Z>
+
+## 6. Security Implementation [done]
+### Dependencies: 8.3, 8.4
+### Description: Implement security measures including authentication, authorization, and data protection
+### Details:
+Set up authentication mechanisms (OAuth, JWT, API keys). Implement authorization logic for different user roles. Secure sensitive data storage, implement HTTPS, protect against common vulnerabilities (OWASP Top 10), and ensure proper token management.
+<info added on 2025-05-31T20:08:31.124Z>
+# Existing Security Implementations
+
+- **Authentication Mechanisms**: Implemented using JWT with Supabase integration. This includes multi-provider OAuth (Google, GitHub, Microsoft) and a secure user invitation system (covered in Task 4.1, 4.2, and 4.6).
+- **Authorization Logic**: A comprehensive Role-Based Access Control (RBAC) system is in place, with a 6-tier role hierarchy and granular permissions across various resource types (covered in Task 4.4). Property context isolation ensures multi-tenant data security (Task 4.5).
+- **Sensitive Data Storage**: Supabase handles secure storage of sensitive data, and we leverage PostgreSQL's Row-Level Security (RLS) policies for fine-grained data access control (Task 2.4).
+- **HTTPS**: Deployment on Railway and Nginx configuration ensures HTTPS is enforced for all traffic.
+- **Protection against Common Vulnerabilities**: General security practices are applied, and the use of `helmet` middleware in `src/index.ts` provides basic protection against common web vulnerabilities.
+- **Proper Token Management**: JWT tokens are securely generated, validated, and managed, with refresh token mechanisms in place.
+</info added on 2025-05-31T20:08:31.124Z>
+
+## 7. Logging and Monitoring Setup [done]
+### Dependencies: 8.4, 8.6
+### Description: Implement comprehensive logging and monitoring systems
+### Details:
+Set up logging for all API requests, responses, and errors with appropriate detail levels. Implement request IDs for traceability. Configure monitoring tools to track API performance, usage metrics, and health. Set up alerts for critical issues.
+<info added on 2025-05-31T20:09:06.302Z>
+Comprehensive logging implementation complete using Winston for application logging with environment-specific formats (development/production) and multiple transports (console/file). Custom requestLogger middleware implemented using Morgan with enhanced tokens capturing user ID, property ID, response time, and other contextual information. All API requests, responses, and errors are now tracked with appropriate detail levels and unique request IDs for complete traceability. The logging architecture is designed to integrate seamlessly with external monitoring tools for performance tracking, usage metrics, and health monitoring. Alert configurations are ready for critical issue notification.
+</info added on 2025-05-31T20:09:06.302Z>
+
+## 8. API Documentation [done]
+### Dependencies: 8.4, 8.5
+### Description: Create comprehensive API documentation for developers
+### Details:
+Generate detailed API documentation using tools like Swagger/OpenAPI. Include endpoint descriptions, request/response examples, authentication requirements, error codes, and usage guidelines. Ensure documentation is kept in sync with implementation.
+<info added on 2025-05-31T20:11:27.176Z>
+API documentation has been successfully implemented using `swagger-ui-express` and `yamljs`. The OpenAPI specification is defined in `packages/backend/src/docs/openapi.yaml`, and the documentation UI is now served at `/api/v1/docs`. This provides comprehensive API documentation for developers, in sync with the backend implementation.
+</info added on 2025-05-31T20:11:27.176Z>
+
+## 9. CI/CD Pipeline Configuration [pending]
+### Dependencies: 8.1, 8.7, 8.8
+### Description: Set up continuous integration and deployment pipelines for the API
+### Details:
+Implement CI/CD pipelines using tools like Jenkins, GitLab CI, or CircleCI. Configure automated testing (unit, integration, security) and deployment processes. Set up pre-deployment checks and establish rollback procedures for failed deployments.
+
+## 10. Technology Decision Document [pending]
+### Dependencies: None
+### Description: Create a document capturing all technology decisions made collaboratively
+### Details:
+Document all technology choices made for the backend implementation including API framework, ORM, validation library, authentication strategy, API documentation approach, error handling strategy, logging solution, rate limiting implementation, and testing frameworks. Include rationale for each decision and any trade-offs considered.
+<info added on 2025-05-31T18:17:28.275Z>
+# Backend Technology Decisions
+
+## API Design & Framework
+- **API Design Pattern**: RESTful API with versioning (/api/v1/)
+  - Rationale: Chosen for simplicity, broad compatibility, and industry familiarity
+  - Trade-offs: GraphQL would offer more flexible queries but add complexity
+- **API Framework**: Express.js
+  - Rationale: Mature ecosystem, extensive middleware support, performance
+  - Trade-offs: Considered NestJS for structure but prioritized simplicity
+
+## Database & Data Management
+- **Database ORM**: Prisma
+  - Rationale: Type safety, excellent developer experience, auto-migrations
+  - Trade-offs: Considered Sequelize and TypeORM but Prisma's type generation is superior
+
+## Validation & Security
+- **Validation Library**: Zod
+  - Rationale: TypeScript integration, runtime type checking, schema reusability
+  - Trade-offs: Joi offers more features but Zod has better TypeScript support
+- **Authentication**: JWT with bcrypt
+  - Rationale: Stateless authentication, scalability, security
+  - Trade-offs: Session-based auth would be simpler but less scalable
+
+## Documentation & Monitoring
+- **API Documentation**: OpenAPI/Swagger
+  - Rationale: Industry standard, interactive documentation, client generation
+  - Trade-offs: Considered JSDoc but OpenAPI offers better tooling
+- **Logging**: Winston
+  - Rationale: Flexible transport options, structured logging, performance
+  - Trade-offs: Considered Pino for performance but Winston offers more flexibility
+
+## Error Handling & Testing
+- **Error Handling**: Custom error classes with standardized response format
+  - Rationale: Provides better control and consistent user experience
+  - Trade-offs: More code to maintain but better user experience
+- **Testing Framework**: Jest with Supertest
+  - Rationale: Comprehensive testing capabilities, snapshot testing, mocking
+  - Trade-offs: Considered Mocha/Chai but Jest's all-in-one approach is preferred
+</info added on 2025-05-31T18:17:28.275Z>
+

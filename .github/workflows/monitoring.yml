@@ -1,0 +1,127 @@
+name: Production Monitoring
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [staging, production]
+        service: [backend, web]
+    
+    steps:
+      - name: Set URLs
+        id: urls
+        run: |
+          if [[ "${{ matrix.environment }}" == "production" ]]; then
+            if [[ "${{ matrix.service }}" == "backend" ]]; then
+              echo "url=${{ secrets.BACKEND_PRODUCTION_URL }}" >> $GITHUB_OUTPUT
+            else
+              echo "url=${{ secrets.WEB_PRODUCTION_URL }}" >> $GITHUB_OUTPUT
+            fi
+          else
+            if [[ "${{ matrix.service }}" == "backend" ]]; then
+              echo "url=${{ secrets.BACKEND_STAGING_URL }}" >> $GITHUB_OUTPUT
+            else
+              echo "url=${{ secrets.WEB_STAGING_URL }}" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Health Check
+        id: health
+        run: |
+          echo "Checking health of ${{ matrix.service }} in ${{ matrix.environment }}"
+          
+          # Perform health check with timeout
+          if timeout 30 curl -f "${{ steps.urls.outputs.url }}/health"; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+            echo "✅ ${{ matrix.service }} in ${{ matrix.environment }} is healthy"
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            echo "❌ ${{ matrix.service }} in ${{ matrix.environment }} is unhealthy"
+            exit 1
+          fi
+
+      - name: Performance Check
+        if: steps.health.outputs.status == 'healthy'
+        run: |
+          echo "Running performance check for ${{ matrix.service }} in ${{ matrix.environment }}"
+          
+          # Measure response time
+          response_time=$(curl -o /dev/null -s -w '%{time_total}' "${{ steps.urls.outputs.url }}/health")
+          echo "Response time: ${response_time}s"
+          
+          # Alert if response time is too high (> 2 seconds)
+          if (( $(echo "$response_time > 2.0" | bc -l) )); then
+            echo "⚠️ High response time detected: ${response_time}s"
+            echo "PERFORMANCE_ALERT=true" >> $GITHUB_ENV
+          fi
+
+      - name: Alert on Failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            🚨 ALERT: ${{ matrix.service }} in ${{ matrix.environment }} is DOWN!
+            
+            Service: ${{ matrix.service }}
+            Environment: ${{ matrix.environment }}
+            URL: ${{ steps.urls.outputs.url }}
+            Time: ${{ github.run_id }}
+            
+            Please investigate immediately.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Alert on Performance Issue
+        if: env.PERFORMANCE_ALERT == 'true'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: warning
+          text: |
+            ⚠️ Performance Alert: ${{ matrix.service }} in ${{ matrix.environment }}
+            
+            High response time detected. Please monitor performance.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  database-check:
+    name: Database Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Supabase Connection
+        run: |
+          echo "Checking Supabase database connection..."
+          
+          # Simple connection test using curl
+          response=$(curl -s -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/")
+          
+          if [[ $? -eq 0 ]]; then
+            echo "✅ Database connection successful"
+          else
+            echo "❌ Database connection failed"
+            exit 1
+          fi
+
+      - name: Alert on Database Failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            🚨 DATABASE ALERT: Supabase connection failed!
+            
+            Please check database status immediately.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

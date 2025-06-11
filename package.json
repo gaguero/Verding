@@ -1,0 +1,119 @@
+{
+  "name": "verding",
+  "version": "0.1.1",
+  "description": "Agent-First Microgreens Management Platform",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "lint:eslint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:eslint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "lint:prettier": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yml,yaml}\"",
+    "lint:prettier:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yml,yaml}\"",
+    "lint:stylelint": "stylelint \"**/*.{css,scss,sass}\"",
+    "lint:stylelint:fix": "stylelint \"**/*.{css,scss,sass}\" --fix",
+    "format": "npm run lint:prettier:fix",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test:coverage",
+    "test:e2e": "turbo run test:e2e",
+    "clean": "turbo run clean",
+    "env:dev": "env-cmd -r config/environments.js -e development",
+    "env:test": "env-cmd -r config/environments.js -e test",
+    "env:staging": "env-cmd -r config/environments.js -e staging",
+    "env:production": "env-cmd -r config/environments.js -e production",
+    "dev:backend": "npm run env:dev -- turbo run dev --filter=@verding/backend",
+    "dev:web": "npm run env:dev -- turbo run dev --filter=@verding/web",
+    "dev:mobile": "npm run env:dev -- turbo run dev --filter=@verding/mobile",
+    "test:env": "npm run env:test -- turbo run test",
+    "build:staging": "npm run env:staging -- turbo run build",
+    "build:production": "npm run env:production -- turbo run build",
+    "tasks:list": "task-master list",
+    "tasks:next": "task-master next",
+    "tasks:status": "task-master set-status",
+    "deploy:staging": "turbo run deploy:staging",
+    "deploy:production": "turbo run deploy:production",
+    "ci:validate": "npm run lint && npm run type-check && npm run test && npm run build",
+    "ci:audit": "npm audit --audit-level=high",
+    "ci:security": "npx audit-ci --config audit-ci.json",
+    "deps:validate": "node scripts/validate-dependencies.js",
+    "deps:check": "npm run deps:validate",
+    "version:patch": "npm run version:sync -- patch",
+    "version:minor": "npm run version:sync -- minor",
+    "version:major": "npm run version:sync -- major",
+    "version:sync": "npm run version:sync:packages && npm run version:sync:root",
+    "version:sync:packages": "node scripts/sync-versions.js",
+    "version:sync:root": "npm version --no-git-tag-version",
+    "release:patch": "npm run version:patch && git add . && git commit -m 'chore: release patch version' && git tag v$(node -p \"require('./package.json').version\") && git push && git push --tags",
+    "release:minor": "npm run version:minor && git add . && git commit -m 'chore: release minor version' && git tag v$(node -p \"require('./package.json').version\") && git push && git push --tags",
+    "release:major": "npm run version:major && git add . && git commit -m 'chore: release major version' && git tag v$(node -p \"require('./package.json').version\") && git push && git push --tags",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "audit-ci": "^7.1.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.5.0",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "postcss-scss": "^4.0.9",
+    "prettier": "^2.8.8",
+    "stylelint": "^16.20.0",
+    "stylelint-config-standard": "^38.0.0",
+    "turbo": "^1.10.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/verding.git"
+  },
+  "keywords": [
+    "agriculture",
+    "microgreens",
+    "ai-agent",
+    "farm-management",
+    "typescript",
+    "react",
+    "react-native",
+    "supabase",
+    "n8n"
+  ],
+  "author": "Verding Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-org/verding/issues"
+  },
+  "homepage": "https://github.com/your-org/verding#readme",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "zustand": "^5.0.5"
+  }
+}

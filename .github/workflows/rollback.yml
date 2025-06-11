@@ -1,0 +1,121 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      service:
+        description: 'Service to rollback'
+        required: true
+        type: choice
+        options:
+          - backend
+          - web
+          - both
+      version:
+        description: 'Version/commit to rollback to (optional)'
+        required: false
+        type: string
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  rollback:
+    name: Rollback ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.version || 'HEAD~1' }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: ${{ github.event.inputs.environment == 'production' && 'production' || 'staging' }}
+          VITE_NODE_ENV: ${{ github.event.inputs.environment == 'production' && 'production' || 'staging' }}
+          VITE_API_BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://verding-backend.up.railway.app' || 'https://verding-backend-staging.up.railway.app' }}
+          VITE_BUILD_TIME: ${{ github.run_id }}-${{ github.run_number }}-rollback
+          VITE_APP_VERSION: ${{ github.event.inputs.version || 'rollback' }}
+
+      - name: Rollback Backend
+        if: github.event.inputs.service == 'backend' || github.event.inputs.service == 'both'
+        uses: railwayapp/cli@v3
+        with:
+          command: up --service backend-${{ github.event.inputs.environment }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Rollback Web
+        if: github.event.inputs.service == 'web' || github.event.inputs.service == 'both'
+        uses: railwayapp/cli@v3
+        with:
+          command: up --service web-${{ github.event.inputs.environment }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Wait for rollback
+        run: |
+          echo "Waiting for rollback to complete..."
+          sleep 60
+
+      - name: Health Check After Rollback
+        run: |
+          echo "Running health checks after rollback..."
+          
+          # Determine URLs based on environment
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            BACKEND_URL="${{ secrets.BACKEND_PRODUCTION_URL }}"
+            WEB_URL="${{ secrets.WEB_PRODUCTION_URL }}"
+          else
+            BACKEND_URL="${{ secrets.BACKEND_STAGING_URL }}"
+            WEB_URL="${{ secrets.WEB_STAGING_URL }}"
+          fi
+
+          # Health check for backend
+          if [[ "${{ github.event.inputs.service }}" == "backend" || "${{ github.event.inputs.service }}" == "both" ]]; then
+            echo "Checking backend health at $BACKEND_URL"
+            curl -f "$BACKEND_URL/health" || exit 1
+          fi
+
+          # Health check for web
+          if [[ "${{ github.event.inputs.service }}" == "web" || "${{ github.event.inputs.service }}" == "both" ]]; then
+            echo "Checking web health at $WEB_URL"
+            curl -f "$WEB_URL/health" || exit 1
+          fi
+
+      - name: Notify Rollback Success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🔄 Rollback of ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }} completed successfully!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Rollback Failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: '❌ Rollback of ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }} failed!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

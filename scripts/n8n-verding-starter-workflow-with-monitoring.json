@@ -1,0 +1,639 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "verding-agent",
+        "options": {}
+      },
+      "id": "fd7acdbd-09e1-46ef-ac9e-2ec76f4a33e4",
+      "name": "Agent Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1320,
+        580
+      ],
+      "webhookId": "verding-agent-webhook"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI-2025-04-14"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.system_prompt }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.user_message }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 500,
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -440,
+        380
+      ],
+      "id": "5c2fa6a9-6b12-4b47-a7bc-5aee96e7f6f0",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "yNW2ND5XFoovQKbn",
+          "name": "OpenAi account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n          \"success\": true,\n          \"response\": \"{{ $('OpenAI').item.json.choices[0].message.content.response }}\",\n          \"context\":{{ JSON.stringify($node['Prepare Agent Context2'].json.context) }},\n          \"timestamp\": \"{{ new Date().toISOString() }}\"\n        }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        376,
+        130
+      ],
+      "id": "7f36a76f-d25b-4d06-81d7-b32ef83b1acc",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        156,
+        130
+      ],
+      "id": "e2784a64-02d0-4006-89dd-3c18bea9ec81",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "properties"
+      },
+      "id": "44b82c8a-7f81-43f6-846b-36cac535b737",
+      "name": "Get Properties2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        580
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract user message from webhook payload\n// Handle different possible webhook data structures\nconst webhookData = $node[\"Agent Webhook\"].json;\nconst userMessage = webhookData.message || webhookData.body?.message || webhookData.query?.message || 'Hello';\nconst userId = webhookData.user_id || webhookData.body?.user_id || webhookData.query?.user_id || 'a546fb65-18f8-4c62-9c50-6c705e82c525';\nconst propertyId = webhookData.property_id || webhookData.body?.property_id || webhookData.query?.property_id || null;\n\n// Get properties data from the Supabase node using n8n's $node syntax\nlet properties = [];\ntry {\n  // Access the Get Properties node output directly\n  const propertiesData = $node[\"Get Properties\"].json;\n  \n  // The Supabase node returns an array directly\n  if (Array.isArray(propertiesData)) {\n    properties = propertiesData;\n  } else if (propertiesData && typeof propertiesData === 'object') {\n    // If it's a single object, wrap it in an array\n    properties = [propertiesData];\n  }\n} catch (error) {\n  console.log('Error processing properties data:', error);\n  properties = [];\n}\n\n// Create context for the agent\nconst agentContext = {\n  user: {\n    id: userId,\n    message: userMessage,\n    timestamp: new Date().toISOString()\n  },\n  property: {\n    id: propertyId,\n    available_properties: properties\n  },\n  system: {\n    platform: 'verding',\n    version: '0.1.0',\n    capabilities: [\n      'property_management',\n      'sowing_tracking',\n      'harvest_planning',\n      'customer_management',\n      'order_processing'\n    ]\n  }\n};\n\n// Prepare prompt for OpenAI\nconst systemPrompt = `You are Verding, an AI assistant for microgreens farm management. You help users manage their properties, track sowing and harvests, handle customers and orders.\n\nAvailable properties: ${JSON.stringify(properties, null, 2)}\n\nUser context: ${JSON.stringify(agentContext.user, null, 2)}\n\nRespond helpfully and concisely. If the user needs to perform actions, suggest specific next steps.`;\n\nreturn {\n  json: {\n    system_prompt: systemPrompt,\n    user_message: userMessage,\n    context: agentContext\n  }\n};"
+      },
+      "id": "63e4c811-549d-4706-987c-b7c2fe2fec99",
+      "name": "Prepare Agent Context2",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        480
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "conversation_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $node['Prepare Agent Context2'].json.context.user.id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $node['Prepare Agent Context2'].json.context.property.id }}"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "web"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "user"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Prepare Agent Context2'].json.user_message }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($node['Prepare Agent Context2'].json.context) }}"
+            }
+          ]
+        }
+      },
+      "id": "e5bc16e4-ad12-4fc9-b1f8-1bb9c869e1ee",
+      "name": "Log User Message2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        80
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "conversation_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $node['Prepare Agent Context2'].json.context.user.id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $node['Prepare Agent Context2'].json.context.property.id }}"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "web"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "assistant"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $json.choices[0].message.content }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($node['Prepare Agent Context2'].json.context) }}"
+            }
+          ]
+        }
+      },
+      "id": "57ed3bee-dcca-4e5c-80f9-20d424d73b77",
+      "name": "Log Agent Response2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        480
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Monitoring: Initialize execution tracking\nconst executionId = $execution.id;\nconst startTime = new Date();\nconst workflowName = 'verding-agent';\n\n// Get data directly from the webhook (available at this stage)\nconst webhookData = $input.first()?.json || {};\nconst propertyId = webhookData.property_id || webhookData.body?.property_id || webhookData.query?.property_id || null;\nconst userId = webhookData.user_id || webhookData.body?.user_id || webhookData.query?.user_id || null;\n\n// Pass through original data plus monitoring metadata\nreturn {\n  json: {\n    ...webhookData,\n    _monitoring: {\n      execution_id: executionId,\n      start_time: startTime.toISOString(),\n      workflow_name: workflowName,\n      property_id: propertyId,\n      user_id: userId,\n      step: 'execution_start'\n    }\n  }\n};"
+      },
+      "id": "506d445b-69dd-43e9-889b-0cc234901d94",
+      "name": "Monitor Execution Start",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Monitoring: Calculate execution metrics\nconst monitoring = $node['Monitor Execution Start'].json._monitoring;\nconst endTime = new Date();\nconst startTime = new Date(monitoring.start_time);\nconst executionTime = endTime - startTime;\n\n// Determine status based on OpenAI response\nconst openAiData = $node['OpenAI'].json;\nconst hasError = !openAiData || !openAiData.choices || !openAiData.choices[0];\nconst status = hasError ? 'failed' : 'success';\n\n// Get user/property context from Prepare Agent Context2 (now available)\nconst contextData = $node['Prepare Agent Context2'].json.context;\nconst propertyId = contextData?.property?.id || monitoring.property_id;\nconst userId = contextData?.user?.id || monitoring.user_id;\n\n// Extract response metadata\nconst responseMetadata = {\n  model_used: openAiData?.model || 'unknown',\n  tokens_used: openAiData?.usage?.total_tokens || 0,\n  prompt_tokens: openAiData?.usage?.prompt_tokens || 0,\n  completion_tokens: openAiData?.usage?.completion_tokens || 0\n};\n\nreturn {\n  json: {\n    execution_id: monitoring.execution_id,\n    workflow_name: monitoring.workflow_name,\n    property_id: propertyId,\n    user_id: userId,\n    status: status,\n    execution_time_ms: executionTime,\n    start_time: monitoring.start_time,\n    end_time: endTime.toISOString(),\n    metadata: {\n      step_completed: 'ai_response',\n      ...responseMetadata\n    },\n    error_details: hasError ? 'OpenAI response incomplete or failed' : null\n  }\n};"
+      },
+      "id": "8a85277f-11c0-4896-8e80-343f22037c3b",
+      "name": "Monitor Success Metrics",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "n8n_workflow_metrics",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "workflow_id",
+              "fieldValue": "verding-agent-starter"
+            },
+            {
+              "fieldId": "workflow_name",
+              "fieldValue": "={{ $json.workflow_name }}"
+            },
+            {
+              "fieldId": "execution_id",
+              "fieldValue": "={{ $json.execution_id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $json.property_id }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id }}"
+            },
+            {
+              "fieldId": "node_name",
+              "fieldValue": "Log Success Metrics"
+            },
+            {
+              "fieldId": "metric_type",
+              "fieldValue": "execution"
+            },
+            {
+              "fieldId": "metric_value",
+              "fieldValue": "={{ $json.execution_time_ms }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            },
+            {
+              "fieldId": "start_time",
+              "fieldValue": "={{ $json.start_time }}"
+            },
+            {
+              "fieldId": "end_time",
+              "fieldValue": "={{ $json.end_time }}"
+            },
+            {
+              "fieldId": "execution_time_ms",
+              "fieldValue": "={{ $json.execution_time_ms }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($json.metadata) }}"
+            },
+            {
+              "fieldId": "error_details",
+              "fieldValue": "={{ $json.error_details }}"
+            }
+          ]
+        }
+      },
+      "id": "9b25d14d-8c1b-4d38-9892-aa81548c3e83",
+      "name": "Log Success Metrics",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        160,
+        340
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Enhanced Error Monitoring: Capture comprehensive error details from n8n execution context\nconst monitoring = $node['Monitor Execution Start'].json._monitoring;\nconst endTime = new Date();\nconst startTime = new Date(monitoring.start_time);\nconst executionTime = endTime - startTime;\n\n// Initialize error information\nlet errorDetails = 'Unknown error occurred';\nlet errorNode = 'unknown';\nlet errorType = 'execution_error';\nlet inputData = {};\nlet errorStack = '';\nlet errorMessage = 'Unknown error';\n\n// Try to extract error information from the input data (error context from n8n)\ntry {\n  // Get the current input data (which comes from the error output)\n  const currentInput = $input.first();\n  \n  console.log('=== ERROR DEBUG INFO ===');\n  console.log('Full input context:', JSON.stringify(currentInput, null, 2));\n  console.log('Available properties:', Object.keys(currentInput || {}));\n  console.log('Error context:', currentInput?.error);\n  console.log('JSON data:', currentInput?.json);\n  console.log('========================');\n  \n  // Method 1: Check if error info is in the input JSON\n  if (currentInput?.json?.error) {\n    const error = currentInput.json.error;\n    errorMessage = error.message || error.description || 'Error in JSON data';\n    errorStack = error.stack || error.trace || '';\n    errorNode = error.node || error.source || 'json_data';\n    errorType = error.type || 'json_error';\n  }\n  // Method 2: Check if the whole input IS an error object\n  else if (currentInput?.error) {\n    const error = currentInput.error;\n    errorMessage = error.message || error.description || 'Input error object';\n    errorStack = error.stack || error.trace || '';\n    errorNode = error.node || error.source || 'input';\n    errorType = error.type || 'input_error';\n  }\n  // Method 3: Check if error details are in binary/pagedData\n  else if (currentInput?.pagedData || currentInput?.binary) {\n    errorMessage = 'Error in binary/paged data';\n    errorType = 'data_error';\n    errorNode = 'data_processing';\n  }\n  // Method 4: Try to extract from any available data in input\n  else if (currentInput) {\n    // Look for error indicators in the data structure\n    const dataStr = JSON.stringify(currentInput);\n    \n    // Common error patterns\n    if (dataStr.includes('error') || dataStr.includes('Error')) {\n      errorMessage = 'Error detected in input data';\n      errorType = 'pattern_error';\n      errorNode = 'data_analysis';\n    } else if (dataStr.includes('timeout') || dataStr.includes('Timeout')) {\n      errorMessage = 'Timeout detected';\n      errorType = 'network_error';\n      errorNode = 'timeout';\n    } else if (dataStr.includes('unauthorized') || dataStr.includes('Unauthorized')) {\n      errorMessage = 'Authorization failure';\n      errorType = 'authorization_error';\n      errorNode = 'auth';\n    } else {\n      errorMessage = 'Execution failed - reviewing input context';\n      errorType = 'execution_error';\n      errorNode = 'execution';\n    }\n  }\n  \n  // Extract input data context for debugging\n  if (currentInput?.json) {\n    inputData = {\n      message: currentInput.json.message || currentInput.json.user_message || 'N/A',\n      property_id: currentInput.json.property_id || 'N/A',\n      user_id: currentInput.json.user_id || 'N/A',\n      data_size: JSON.stringify(currentInput.json).length,\n      available_keys: Object.keys(currentInput.json),\n      data_preview: JSON.stringify(currentInput.json).substring(0, 200) + '...'\n    };\n  } else if (currentInput) {\n    inputData = {\n      available_properties: Object.keys(currentInput),\n      data_type: typeof currentInput,\n      data_size: JSON.stringify(currentInput).length,\n      raw_preview: JSON.stringify(currentInput).substring(0, 200) + '...'\n    };\n  }\n  \n  // Build comprehensive error details\n  errorDetails = `ERROR: ${errorMessage}\\n\\n`;\n  errorDetails += `NODE: ${errorNode}\\n`;\n  errorDetails += `TYPE: ${errorType}\\n`;\n  errorDetails += `INPUT CONTEXT: ${JSON.stringify(inputData, null, 2)}\\n\\n`;\n  \n  if (errorStack) {\n    errorDetails += `STACK TRACE:\\n${errorStack}\\n\\n`;\n  } else {\n    errorDetails += `RAW INPUT DATA:\\n${JSON.stringify(currentInput, null, 2)}\\n\\n`;\n  }\n  \n  errorDetails += `EXECUTION ID: ${monitoring.execution_id}\\n`;\n  errorDetails += `TIMESTAMP: ${endTime.toISOString()}`;\n  \n} catch (errorExtractionError) {\n  console.log('Error extraction failed:', errorExtractionError);\n  errorDetails = `ERROR EXTRACTION FAILED: ${errorExtractionError.message}\\n\\n`;\n  errorDetails += `FALLBACK CONTEXT: ${JSON.stringify($input.all(), null, 2)}\\n\\n`;\n  errorDetails += `MONITORING DATA: ${JSON.stringify(monitoring, null, 2)}`;\n  errorType = 'error_extraction_failure';\n}\n\n// Get user/property context if available\nlet propertyId = monitoring.property_id;\nlet userId = monitoring.user_id;\n\n// Try to get from context if Prepare Agent Context2 ran before error\ntry {\n  const contextData = $node['Prepare Agent Context2']?.json?.context;\n  if (contextData) {\n    propertyId = contextData.property?.id || propertyId;\n    userId = contextData.user?.id || userId;\n  }\n} catch (e) {\n  // Context not available, use monitoring data\n}\n\nreturn {\n  json: {\n    execution_id: monitoring.execution_id,\n    workflow_name: monitoring.workflow_name,\n    property_id: propertyId,\n    user_id: userId,\n    status: 'failed',\n    execution_time_ms: executionTime,\n    start_time: monitoring.start_time,\n    end_time: endTime.toISOString(),\n    metadata: {\n      error_node: errorNode,\n      error_type: errorType,\n      input_data: JSON.stringify(inputData),\n      execution_context: {\n        workflow_id: monitoring.execution_id,\n        failed_at_step: errorNode,\n        error_classification: errorType,\n        debug_info: 'Enhanced error extraction v2.0'\n      }\n    },\n    error_details: errorDetails\n  }\n};"
+      },
+      "id": "48c7a469-55a5-4b38-8aee-535fdfe189f2",
+      "name": "Monitor Error Metrics",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        730
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "n8n_workflow_metrics",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "workflow_id",
+              "fieldValue": "verding-agent-starter"
+            },
+            {
+              "fieldId": "workflow_name",
+              "fieldValue": "={{ $json.workflow_name }}"
+            },
+            {
+              "fieldId": "execution_id",
+              "fieldValue": "={{ $json.execution_id }}"
+            },
+            {
+              "fieldId": "property_id",
+              "fieldValue": "={{ $json.property_id }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id }}"
+            },
+            {
+              "fieldId": "node_name",
+              "fieldValue": "Log Error Metrics"
+            },
+            {
+              "fieldId": "metric_type",
+              "fieldValue": "error"
+            },
+            {
+              "fieldId": "metric_value",
+              "fieldValue": "={{ $json.execution_time_ms }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            },
+            {
+              "fieldId": "start_time",
+              "fieldValue": "={{ $json.start_time }}"
+            },
+            {
+              "fieldId": "end_time",
+              "fieldValue": "={{ $json.end_time }}"
+            },
+            {
+              "fieldId": "execution_time_ms",
+              "fieldValue": "={{ $json.execution_time_ms }}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ JSON.stringify($json.metadata) }}"
+            },
+            {
+              "fieldId": "error_details",
+              "fieldValue": "={{ $json.error_details }}"
+            }
+          ]
+        }
+      },
+      "id": "8b5999e7-a8b3-4de5-8de3-1e2863d28eae",
+      "name": "Log Error Metrics",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        156,
+        730
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "qMhwQT1ersIlUvCB",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        376,
+        505
+      ],
+      "id": "12ab2511-37cd-4e0d-aa8f-bd1f983a04c7",
+      "name": "Monitor Merge"
+    }
+  ],
+  "connections": {
+    "Agent Webhook": {
+      "main": [
+        [
+          {
+            "node": "Monitor Execution Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Log User Message2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Agent Response2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Monitor Success Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monitor Error Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Properties2": {
+      "main": [
+        [
+          {
+            "node": "Prepare Agent Context2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monitor Error Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Agent Context2": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monitor Error Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log User Message2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Agent Response2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Monitor Execution Start": {
+      "main": [
+        [
+          {
+            "node": "Get Properties2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Success Metrics": {
+      "main": [
+        [
+          {
+            "node": "Log Success Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Success Metrics": {
+      "main": [
+        [
+          {
+            "node": "Monitor Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Error Metrics": {
+      "main": [
+        [
+          {
+            "node": "Log Error Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Error Metrics": {
+      "main": [
+        [
+          {
+            "node": "Monitor Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Agent Webhook": [
+      {
+        "headers": {
+          "host": "nbdt.app.n8n.cloud",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+          "content-length": "0",
+          "accept": "application/json",
+          "accept-encoding": "gzip, br",
+          "cdn-loop": "cloudflare; loops=1; subreqs=1",
+          "cf-connecting-ip": "64.227.21.251",
+          "cf-ew-via": "15",
+          "cf-ipcountry": "US",
+          "cf-ray": "9487c16a25e3aa39-EWR",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "cf-worker": "n8n.cloud",
+          "content-type": "application/json",
+          "x-forwarded-for": "64.227.21.251, 104.23.187.72",
+          "x-forwarded-host": "nbdt.app.n8n.cloud",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "traefik-prod-users-gwc-14-5654dfbc89-jnfjz",
+          "x-is-trusted": "yes",
+          "x-real-ip": "64.227.21.251"
+        },
+        "params": {},
+        "query": {
+          "message": "hi"
+        },
+        "webhookUrl": "https://nbdt.app.n8n.cloud/webhook-test/verding-agent",
+        "executionMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "7f063a03c3c4f995da15bf84766c9adbe3d5a468b5a2f620f2cc4d5f1d7952de"
+  }
+}

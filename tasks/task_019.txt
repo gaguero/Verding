@@ -1,0 +1,77 @@
+# Task ID: 19
+# Title: Implement Harvest Planning System
+# Status: pending
+# Dependencies: 3, 8, 18
+# Priority: medium
+# Description: Develop the harvest planning system for tracking maturity, scheduling harvests, and recording yields.
+# Details:
+1. Create maturity tracking system
+2. Implement harvest scheduling and planning
+3. Create yield recording and analysis
+4. Implement quality assessment metrics
+5. Create harvest resource planning
+6. Implement post-harvest processing tracking
+7. Create harvest notification system
+8. Develop harvest analytics and reporting
+
+Implement a system that tracks the maturity of microgreens batches and predicts optimal harvest times. Create scheduling tools that balance labor resources with harvest needs. Implement quality metrics for assessing harvest results.
+
+# Test Strategy:
+1. Test maturity tracking accuracy
+2. Validate harvest scheduling
+3. Test yield recording and calculations
+4. Verify quality assessment metrics
+5. Test resource planning
+6. Validate post-harvest tracking
+7. Test notification system
+8. Verify analytics and reporting
+
+# Subtasks:
+## 1. Maturity Tracking System [pending]
+### Dependencies: None
+### Description: Develop a system to track crop maturity based on planting dates and expected harvest windows
+### Details:
+Create a calculator that uses catalog days to maturity and actual weeks to maturity based on past experience to project first harvest week. Include fields for planting date, expected maturity date, and visual indicators for approaching harvest windows.
+
+## 2. Harvest Schedule Creation [pending]
+### Dependencies: 19.1
+### Description: Build a scheduling tool that organizes harvests by crop, field, and priority
+### Details:
+Design a calendar view that shows all upcoming harvests, allowing fields to be checked off as they are completed. Include functionality to adjust schedules based on actual maturity rates and weather conditions.
+
+## 3. Yield Recording Framework [pending]
+### Dependencies: 19.2
+### Description: Implement a system to record actual yields against projections
+### Details:
+Create data entry forms for recording harvest quantities by crop and field. Compare actual yields to projected yields and calculate variance. Store historical yield data for future planning reference.
+
+## 4. Quality Assessment Module [pending]
+### Dependencies: 19.3
+### Description: Develop a quality grading system for harvested crops
+### Details:
+Build assessment forms with customizable quality metrics for different crop types. Include photo documentation capabilities and quality trend analysis over time and by field location.
+
+## 5. Resource Planning Tool [pending]
+### Dependencies: 19.2
+### Description: Create a tool to calculate labor and equipment needs for scheduled harvests
+### Details:
+Design a resource calculator that estimates labor hours, equipment needs, and packaging materials required based on crop type, harvest volume, and field location. Include cost estimation functionality.
+
+## 6. Post-Harvest Tracking System [pending]
+### Dependencies: 19.3, 19.4
+### Description: Implement tracking for storage, processing, and distribution of harvested crops
+### Details:
+Develop inventory management for harvested crops with storage location tracking, processing status updates, and distribution records. Include shelf-life monitoring and storage condition logging.
+
+## 7. Notification System [pending]
+### Dependencies: 19.1, 19.2
+### Description: Build automated alerts for approaching harvest dates and critical actions
+### Details:
+Create configurable notifications for upcoming harvests, quality issues, yield anomalies, and resource shortages. Include multiple delivery methods (email, SMS, in-app) with priority settings.
+
+## 8. Analytics Dashboard [pending]
+### Dependencies: 19.3, 19.4, 19.6
+### Description: Develop comprehensive reporting on harvest performance and trends
+### Details:
+Build visual reports comparing planned vs. actual harvests, quality metrics over time, yield by field and crop variety, and financial performance. Include export functionality and customizable views for different user roles.
+

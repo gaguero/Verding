@@ -1,0 +1,86 @@
+/* Page Wrapper */
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--color-primary-off-white);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--spacing-large);
+  background-color: var(--color-background-paper);
+  box-shadow: var(--shadow-medium);
+  border-radius: var(--radius-medium);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+/* Form Group */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-micro);
+}
+
+/* Error Message */
+.error {
+  color: var(--color-error);
+  margin-bottom: var(--spacing-small);
+}
+
+/* Footer */
+.footer {
+  margin-top: var(--spacing-medium);
+  text-align: center;
+}
+
+.footer .link {
+  color: var(--color-accent-teal);
+  text-decoration: none;
+}
+
+/* OAuth Section */
+.oauthSection {
+  margin-top: var(--spacing-medium);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--spacing-medium) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider span {
+  padding: 0 var(--spacing-default);
+  background: var(--background-paper);
+}
+
+.oauthButtons {
+  display: flex;
+  gap: var(--spacing-small);
+  justify-content: center;
+} 

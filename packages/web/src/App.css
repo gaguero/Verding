@@ -1,0 +1,433 @@
+/* ================================
+   VERDING APP MAIN LAYOUT STYLES
+   Core application layout and components
+   ================================ */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--color-background-primary);
+  font-family: var(--font-family-primary);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-default);
+}
+
+.app-header {
+  padding: var(--spacing-default) 0;
+  background: var(--color-background-paper);
+  border-bottom: 1px solid var(--border-color-subtle);
+}
+
+.app-header__content {
+  display: flex;
+  align-items: center;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-right: auto;
+}
+
+.app-logo svg {
+  width: 32px;
+  height: 32px;
+  color: var(--color-primary-earth-green);
+}
+
+.app-logo h1 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-earth-green);
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--spacing-large) 0;
+}
+
+.app-footer {
+  padding: var(--spacing-default) 0;
+  background: var(--color-background-paper);
+  border-top: 1px solid var(--border-color-subtle);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Welcome/Landing Section */
+.welcome-section {
+  text-align: center;
+}
+
+.welcome-card {
+  padding: var(--spacing-xl);
+}
+
+.welcome-content h2 {
+  margin-bottom: var(--spacing-medium);
+}
+
+.welcome-content p {
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto var(--spacing-large);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: var(--spacing-medium);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.voice-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgb(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transition: all 0.5s ease;
+  transform: translate(-50%, -50%);
+}
+
+.voice-button:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.demo-section {
+  margin-top: var(--spacing-xl);
+}
+
+.demo-header {
+  text-align: center;
+  margin-bottom: var(--spacing-large);
+}
+
+.demo-header h3 {
+  color: var(--color-primary-earth-green);
+}
+
+.demo-card {
+  padding: var(--spacing-large);
+}
+
+.demo-card h4 {
+  color: var(--color-primary-earth-green);
+  margin-bottom: var(--spacing-medium);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.button-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-default);
+}
+
+.button-group {
+  display: flex;
+  gap: var(--spacing-small);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card-demo {
+  display: grid;
+  gap: var(--spacing-default);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.demo-card-small {
+  padding: var(--spacing-large);
+  border-radius: var(--border-radius-default);
+  background: var(--color-background-paper);
+  border: 1px solid var(--border-color-subtle);
+}
+
+.demo-card-small h5 {
+  margin: 0 0 var(--spacing-small) 0;
+  color: var(--color-primary-earth-green);
+}
+
+.data-card-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-small);
+}
+
+.data-card-content svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-accent-teal);
+  flex-shrink: 0;
+}
+
+.data-card-content h6 {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.data-card-content p {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.typography-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.typography-demo > * {
+  margin: 0;
+}
+
+.color-demo {
+  display: grid;
+  gap: var(--spacing-medium);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.color-group {
+  text-align: center;
+}
+
+.color-swatch {
+  width: 100%;
+  height: 60px;
+  border-radius: var(--border-radius-small);
+  margin-bottom: var(--spacing-small);
+  border: 1px solid var(--border-color-subtle);
+}
+
+.primary-earth-green { background-color: var(--color-primary-earth-green); }
+.secondary-sage { background-color: var(--color-secondary-sage); }
+.accent-teal { background-color: var(--color-accent-teal); }
+.accent-gold { background-color: var(--color-accent-gold); }
+.success-green { background-color: var(--color-success-green); }
+.error-red { background-color: var(--color-error-red); }
+
+/* Agent Section (Chat Demo) */
+.agent-section {
+  margin-top: var(--spacing-xl);
+}
+
+.agent-card {
+  padding: var(--spacing-large);
+}
+
+.agent-content {
+  text-align: center;
+}
+
+.agent-content h3 {
+  color: var(--color-primary-earth-green);
+}
+
+.agent-content > p {
+  color: var(--text-secondary);
+}
+
+.chat-demo {
+  max-width: 400px;
+  margin: var(--spacing-large) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.chat-bubble {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border-radius: var(--border-radius-medium);
+  max-width: 80%;
+}
+
+.user-bubble {
+  align-self: flex-end;
+  background: var(--color-primary-earth-green);
+  color: white;
+  border-bottom-right-radius: var(--border-radius-small);
+}
+
+.agent-bubble {
+  align-self: flex-start;
+  background: var(--color-background-paper);
+  border: 1px solid var(--border-color-subtle);
+  border-bottom-left-radius: var(--border-radius-small);
+}
+
+.chat-bubble p {
+  margin: 0;
+}
+
+.agent-actions {
+  margin-top: var(--spacing-default);
+  text-align: center;
+}
+
+.voice-action-button {
+  background: var(--color-accent-teal);
+  color: white;
+  border: none;
+  padding: var(--spacing-medium);
+  border-radius: 50%;
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive Design */
+@media (width <= 1023px) {
+  .container {
+    padding: 0 var(--spacing-medium);
+  }
+
+  .app-header {
+    padding: var(--spacing-small) 0;
+  }
+
+  .app-main {
+    padding: var(--spacing-medium) 0;
+  }
+}
+
+@media (width <= 599px) {
+  .app-logo {
+    flex-direction: column;
+    gap: var(--spacing-micro);
+  }
+
+  .app-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .welcome-actions {
+    flex-direction: column;
+  }
+
+  .button-group {
+    justify-content: center;
+  }
+
+  .card-demo {
+    grid-template-columns: 1fr;
+  }
+
+  .color-demo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .color-swatch {
+    height: 40px;
+  }
+
+  .chat-bubble {
+    max-width: 90%;
+  }
+}
+
+/* Logo animations */
+.app-logo svg {
+  transition: transform 0.3s ease;
+}
+
+.voice-pulse {
+  animation: pulse 2s infinite;
+}
+
+.welcome-section,
+.demo-section,
+.agent-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-section {
+  animation-delay: 0.2s;
+}
+
+.agent-section {
+  animation-delay: 0.4s;
+}
+
+/* Focus and interaction states */
+.welcome-actions button:focus,
+.agent-actions button:focus {
+  outline: 2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-contrast: high) {
+  .app-header {
+    border-bottom-color: var(--text-primary);
+  }
+
+  .voice-button,
+  .voice-action-button {
+    border: 2px solid currentcolor;
+  }
+
+  .chat-bubble {
+    border-width: 2px;
+  }
+
+  .user-bubble {
+    border: 2px solid var(--color-primary-earth-green);
+  }
+
+  .agent-bubble {
+    border: 2px solid var(--border-color-subtle);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-logo svg {
+    transition: none;
+  }
+
+  .voice-pulse {
+    animation: none;
+  }
+
+  .welcome-section,
+  .demo-section,
+  .agent-section {
+    animation: none;
+  }
+
+  .voice-button::before {
+    transition: none;
+  }
+} 
