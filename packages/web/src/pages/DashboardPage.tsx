@@ -6,6 +6,8 @@ import { Layout } from '@/components/Layout';
 import { usePropertyStore } from '@/stores/propertyStore';
 // import styles from '@/styles/components.module.css';
 
+/* eslint-disable max-len */
+
 export function DashboardPage() {
   const { isLoading } = usePropertyStore();
 
