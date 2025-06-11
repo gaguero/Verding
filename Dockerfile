@@ -21,6 +21,9 @@ WORKDIR /app
 # Copy source code
 COPY . .
 
+# Install all dependencies including devDependencies for build tools
+RUN npm install --ignore-scripts
+
 # Build the application
 RUN npm run build
 
