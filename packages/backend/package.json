@@ -19,7 +19,7 @@
     "@supabase/supabase-js": "^2.49.8",
     "@types/compression": "^1.8.0",
     "@types/morgan": "^1.9.9",
-    "@verding/shared": "workspace:*",
+    "@verding/shared": "file:../shared",
     "bcrypt": "^5.1.1",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
