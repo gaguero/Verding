@@ -18,6 +18,7 @@ WORKDIR /app
 COPY . .
 RUN npm install --ignore-scripts
 RUN npm run build --prefix packages/web
+RUN ls -l /app/packages/web
 
 # Stage 3: Production web server
 FROM nginx:alpine
