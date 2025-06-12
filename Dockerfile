@@ -21,16 +21,16 @@ WORKDIR /app
 # Copy source code
 COPY . .
 
-# Remove stray wildcard workspace entries from base stage to prevent duplicate workspaces
-RUN rm -rf 'packages/*'
-
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
-# Generate Prisma client code so Prisma namespace is available
-RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
+# Switch into the backend package to build with its local tsconfig
+WORKDIR /app/packages/backend
 
-# Build the application
+# Generate Prisma client code so Prisma namespace is available
+RUN npx prisma generate --schema=prisma/schema.prisma
+
+# Build the backend using its local tsconfig.json
 RUN npm run build
 
 # Stage 3: Production backend image
