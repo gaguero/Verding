@@ -30,6 +30,9 @@ COPY . .
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
+# Build the shared package first (required dependency)
+RUN npm run build --prefix packages/shared
+
 # Generate Prisma client for the backend
 RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
 

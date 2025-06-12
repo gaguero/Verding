@@ -17,6 +17,11 @@ FROM base AS builder
 WORKDIR /app
 COPY . .
 RUN npm install --ignore-scripts
+
+# Build the shared package first (required dependency for web)
+RUN npm run build --prefix packages/shared
+
+# Now build the web package
 RUN npm run build --prefix packages/web
 RUN ls -l /app/packages/web
 
