@@ -24,7 +24,7 @@ export function getSupabaseClient(): SupabaseClient<any, 'public', any> {
           schema: 'public',
         },
       }
-    );
+    ) as SupabaseClient<any, 'public', any>;
   }
   return supabaseClient!;
 }
@@ -47,7 +47,7 @@ export function getServiceRoleClient(): SupabaseClient<any, 'public', any> {
           schema: 'public',
         },
       }
-    );
+    ) as SupabaseClient<any, 'public', any>;
   }
   return serviceRoleClient!;
 }
