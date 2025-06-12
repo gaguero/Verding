@@ -16,7 +16,6 @@ COPY packages/backend/package.json ./packages/backend/
 COPY packages/web/package.json ./packages/web/
 COPY packages/mobile/package.json ./packages/mobile/
 COPY packages/shared/package.json ./packages/shared/
-COPY packages/docs/package.json ./packages/docs/
 
 # Install only production monorepo dependencies
 RUN npm install --omit=dev --ignore-scripts && npm cache clean --force
