@@ -7,10 +7,10 @@ FROM node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy all monorepo package files and configs
-COPY ../../package*.json ./
-COPY ../../turbo.json ./
-COPY ../../packages/*/package.json ./packages/*/
+# Copy all monorepo package files and configs from the build context (monorepo root)
+COPY package*.json ./
+COPY turbo.json ./
+COPY packages/*/package.json ./packages/*/
 
 # Install all monorepo dependencies
 RUN npm install --omit=dev --ignore-scripts && npm cache clean --force
@@ -20,17 +20,15 @@ FROM base AS builder
 WORKDIR /app
 
 # Copy the entire monorepo source code into the build stage
-COPY ../../ .
+COPY . .
 
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
 # Generate Prisma client for the backend
-# Note: We are running this from the context of the monorepo root
 RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
 
 # Build the backend using its dedicated build config
-# We are now in /app, so we specify the package's build script
 WORKDIR /app/packages/backend
 RUN npm run build
 WORKDIR /app
@@ -44,9 +42,9 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 backend
 
 # Copy ONLY the necessary built backend assets and node_modules from the builder
-COPY --from=builder --chown=backend:nodejs /app/packages/backend/dist ./dist
-COPY --from=builder --chown=backend:nodejs /app/packages/backend/package.json ./package.json
-COPY --from=builder --chown=backend:nodejs /app/node_modules ./node_modules
+COPY --from=builder /app/packages/backend/dist ./dist
+COPY --from=builder /app/packages/backend/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
 
 USER backend
 EXPOSE 3001
