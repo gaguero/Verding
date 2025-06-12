@@ -1,6 +1,5 @@
 import { isDev } from '../config';
 import { logger } from '../utils/logger';
-import { Prisma } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 
@@ -80,7 +79,7 @@ const handleZodError = (error: ZodError): ValidationError => {
 };
 
 // Handle Prisma errors
-const handlePrismaError = (error: Prisma.PrismaClientKnownRequestError): AppError => {
+const handlePrismaError = (error: any): AppError => {
   switch (error.code) {
     case 'P2002':
       return new ConflictError('A record with this data already exists');
@@ -111,9 +110,9 @@ export const errorHandler = (
     appError = error;
   } else if (error instanceof ZodError) {
     appError = handleZodError(error);
-  } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  } else if ((error as any).name === 'PrismaClientKnownRequestError') {
     appError = handlePrismaError(error);
-  } else if (error instanceof Prisma.PrismaClientValidationError) {
+  } else if ((error as any).name === 'PrismaClientValidationError') {
     appError = new ValidationError('Invalid data provided to database');
   } else {
     // Unknown error
