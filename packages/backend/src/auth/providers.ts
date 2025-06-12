@@ -1,7 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { database, security } from '../config/index.js';
 import { AuthProvider, OAuthProvider } from './types.js';
-import jwt from 'jsonwebtoken';
 
 // Supabase client instance
 let supabaseClient: SupabaseClient<any, 'public', any> | null = null;

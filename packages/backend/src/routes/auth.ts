@@ -13,7 +13,6 @@ const router = Router();
 
 // Initialize Supabase client
 const supabase = createClient(database.url, database.anonKey);
-const adminSupabase = createClient(database.url, database.serviceRoleKey);
 
 // Validation schemas
 const registerSchema = z.object({
