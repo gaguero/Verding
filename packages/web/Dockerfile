@@ -30,7 +30,13 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 # Copy built assets from the builder stage
 COPY --from=builder /app/packages/web/dist .
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy nginx configuration template
+COPY nginx.conf /etc/nginx/nginx.conf.template
+
+# Create startup script to substitute environment variables
+RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'envsubst "\$BACKEND_URL" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    chmod +x /docker-entrypoint.d/40-envsubst-on-nginx.sh
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"] 
