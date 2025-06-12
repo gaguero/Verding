@@ -51,6 +51,7 @@ RUN adduser --system --uid 1001 backend
 
 # Copy ONLY the necessary built backend assets and production node_modules
 COPY --from=builder /app/packages/backend/dist ./dist
+COPY --from=builder /app/packages/backend/src/docs ./src/docs
 COPY --from=builder /app/packages/backend/package.json ./package.json
 COPY --from=base /app/node_modules ./node_modules
 
