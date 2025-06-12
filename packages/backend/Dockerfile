@@ -59,18 +59,4 @@ EXPOSE 3001
 ENV NODE_ENV=production
 ENV PORT=3001
 
-CMD ["node", "dist/index.js"]
-
-# Stage 4: Production web image  
-FROM nginx:alpine AS web
-WORKDIR /app
-
-# Copy built web app
-COPY --from=builder /app/packages/web/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["node", "dist/index.js"] 
