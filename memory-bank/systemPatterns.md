@@ -7,6 +7,7 @@
 │                           User Interfaces                             │
 ├─────────────┬─────────────┬──────────────┬────────────┬────────────┤
 │   Telegram  │  WhatsApp   │     Web      │   Mobile   │   Email    │
+│  (Planned)  │  (Planned)  │ (DEPLOYED ✅) │ (Ready)    │ (Planned)  │
 └──────┬──────┴──────┬──────┴──────┬───────┴─────┬──────┴─────┬──────┘
        │             │             │             │            │
        └─────────────┴─────────────┴─────────────┴────────────┘
@@ -14,7 +15,7 @@
                     ┌──────────────▼──────────────┐
                     │      n8n Agent Core         │
                     │  (External Intelligence)    │
-                    │ • NLP Processing            │
+                    │ • NLP Processing (Planned)  │
                     │ • Workflow Orchestration    │
                     │ • Memory Management         │
                     │ • BuJo Task System          │
@@ -25,6 +26,7 @@
                                    │
                     ┌──────────────▼──────────────┐
                     │    Main Verding Backend     │
+                    │  (DEPLOYED ✅ Railway)      │
                     │  • Business Logic           │
                     │  • Data Management          │
                     │  • API Services             │
@@ -35,11 +37,181 @@
                 │                  │                  │
        ┌────────▼────────┐ ┌──────▼──────┐ ┌────────▼────────┐
        │    Supabase     │ │Home Assistant│ │     Stripe      │
-       │ • Database      │ │ • Sensors    │ │ • Billing       │
-       │ • Auth          │ │ • MQTT       │ │ • Payments      │
+       │ (DEPLOYED ✅)   │ │ • Sensors    │ │ • Billing       │
+       │ • Database      │ │ • MQTT       │ │ • Payments      │
+       │ • Auth          │ │ (Planned)    │ │ (Planned)       │
        │ • pgvector      │ └──────────────┘ └─────────────────┘
        │ • Memory Store  │
        └─────────────────┘
+```
+
+## Production Deployment Patterns (OPERATIONAL ✅)
+
+### 1. Railway Cloud Platform Architecture
+
+**Deployment Status**: ✅ **FULLY OPERATIONAL**
+
+#### Multi-Service Deployment
+
+- **Backend Service**: Node.js API container
+  (`https://verding-backend-production.up.railway.app/`)
+- **Frontend Service**: React web application with nginx proxy
+- **Database**: External Supabase PostgreSQL with pgvector
+- **Storage**: Supabase Storage for file management
+- **Authentication**: Supabase Auth for JWT-based security
+
+#### Container Orchestration Patterns
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Railway Platform                         │
+├─────────────────────────┬───────────────────────────────────────┤
+│     Frontend Service    │          Backend Service             │
+│  ┌─────────────────┐   │   ┌─────────────────────────────────┐ │
+│  │  nginx Proxy    │   │   │     Node.js API Server         │ │
+│  │  React SPA      │   │   │  • Express.js Framework        │ │
+│  │  Static Assets  │   │   │  • TypeScript ES Modules       │ │
+│  │  Environment    │   │   │  • Supabase Integration        │ │
+│  │  Substitution   │   │   │  • JWT Authentication          │ │
+│  └─────────────────┘   │   │  • Swagger Documentation       │ │
+│                        │   │  • Health Monitoring           │ │
+│                        │   └─────────────────────────────────┘ │
+└─────────────────────────┴───────────────────────────────────────┘
+                                        │
+                                        ▼
+                              ┌─────────────────┐
+                              │    Supabase     │
+                              │  Cloud Service  │
+                              │ • PostgreSQL    │
+                              │ • pgvector      │
+                              │ • Auth Service  │
+                              │ • File Storage  │
+                              └─────────────────┘
+```
+
+### 2. ES Module Production Patterns
+
+#### TypeScript to ES Module Compilation
+
+- **Module Type**: `"type": "module"` in package.json
+- **Import Extensions**: Explicit `.js` extensions for all relative imports
+- **Index Files**: Proper barrel exports with explicit file references
+- **Build Configuration**: TypeScript targeting ES2022 with Node16 module
+  resolution
+
+#### Critical Implementation Details
+
+```typescript
+// ✅ CORRECT: Explicit .js extension for ES modules
+import { config } from './config/index.js';
+import { logger } from './utils/logger.js';
+
+// ❌ INCORRECT: Directory imports not supported
+import { config } from './config';
+
+// ✅ CORRECT: Proper index file structure
+// config/index.ts exports individual modules
+export { server } from './server.js';
+export { database } from './database.js';
+export { security } from './security.js';
+```
+
+### 3. Environment Management Patterns
+
+#### Railway Environment Configuration
+
+- **Secrets Management**: Railway dashboard for sensitive variables
+- **Environment Isolation**: Separate development/production configurations
+- **Variable Validation**: Startup-time environment validation
+- **Secret Rotation**: Capability for secure key updates
+
+#### Production Environment Structure
+
+```bash
+# Core Application
+NODE_ENV=production
+PORT=8080
+RAILWAY_DOCKERFILE_PATH=packages/backend/Dockerfile
+
+# Database & Authentication
+SUPABASE_URL=https://peyneptmzomwjcbulyvf.supabase.co
+SUPABASE_ANON_KEY=eyJ... (JWT token)
+SUPABASE_SERVICE_ROLE_KEY=eyJ... (Service role JWT)
+
+# Security Keys (Generated via Node.js crypto)
+JWT_SECRET=64-character-hex-string
+SESSION_SECRET=64-character-hex-string
+ENCRYPTION_KEY=32-character-hex-string
+```
+
+### 4. Docker Multi-Stage Build Patterns
+
+#### Optimized Production Builds
+
+```dockerfile
+# Stage 1: Base dependencies
+FROM node:20-alpine AS base
+# Install production dependencies only
+
+# Stage 2: Build stage
+FROM base AS builder
+# Copy source, install dev dependencies, build
+
+# Stage 3: Production runtime
+FROM node:20-alpine AS backend
+# Copy only built assets and production dependencies
+# Non-root user execution for security
+```
+
+#### Container Security Patterns
+
+- **Non-root execution**: Dedicated `backend` user (UID 1001)
+- **Minimal attack surface**: Alpine Linux base images
+- **Layer optimization**: Efficient Docker layer caching
+- **Resource limits**: Memory and CPU constraints
+
+### 5. API Documentation & Monitoring
+
+#### Swagger UI Integration
+
+- **OpenAPI Specification**: YAML-based API documentation
+- **Live Documentation**: `/api/v1/docs` endpoint in production
+- **Interactive Testing**: Built-in API testing interface
+- **Version Management**: API versioning through documentation
+
+#### Health Monitoring Patterns
+
+```typescript
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+  });
+});
+```
+
+### 6. Logging & Observability
+
+#### Production Logging Strategy
+
+- **Console-only logging**: Optimized for containerized environments
+- **Structured logging**: JSON format for log aggregation
+- **Log levels**: Configurable via environment variables
+- **Request tracking**: Comprehensive request/response logging
+
+#### Error Handling Patterns
+
+```typescript
+// Centralized error handling middleware
+app.use(errorHandler);
+
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
 ```
 
 ## Core Architectural Patterns
