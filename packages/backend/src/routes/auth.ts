@@ -12,10 +12,8 @@ import { AuthError, AuthErrorType } from '../auth/types.js';
 const router = Router();
 
 // Initialize Supabase client
-const supabase = createClient(
-  database.supabase.url,
-  database.supabase.serviceRoleKey || database.supabase.anonKey
-);
+const supabase = createClient(database.url, database.anonKey);
+const adminSupabase = createClient(database.url, database.serviceRoleKey);
 
 // Validation schemas
 const registerSchema = z.object({
@@ -43,11 +41,11 @@ const generateTokens = (userId: string, email: string, role?: string) => {
     role,
   };
 
-  const accessToken = jwt.sign(payload, security.jwtSecret, {
+  const accessToken = jwt.sign(payload, security.secret, {
     expiresIn: '15m',
   });
 
-  const refreshToken = jwt.sign(payload, security.jwtSecret, {
+  const refreshToken = jwt.sign(payload, security.secret, {
     expiresIn: '7d',
   });
 
@@ -221,7 +219,7 @@ router.post('/refresh', asyncHandler(async (req: Request, res: Response) => {
   // Verify refresh token
   let decoded: any;
   try {
-    decoded = jwt.verify(refreshToken, security.jwtSecret);
+    decoded = jwt.verify(refreshToken, security.secret);
   } catch (error) {
     throw new AuthenticationError('Invalid or expired refresh token');
   }

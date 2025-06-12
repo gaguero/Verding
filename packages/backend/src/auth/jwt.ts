@@ -49,7 +49,7 @@ export function generateAccessToken(
     expiresIn: TOKEN_CONFIG.accessTokenExpiry as StringValue,
     algorithm: TOKEN_CONFIG.algorithm,
   };
-  return jwt.sign(payload, security.jwtSecret, options);
+  return jwt.sign(payload, security.secret, options);
 }
 
 /**
@@ -68,7 +68,7 @@ export function generateRefreshToken(userId: string, email: string): string {
     expiresIn: TOKEN_CONFIG.refreshTokenExpiry as StringValue,
     algorithm: TOKEN_CONFIG.algorithm,
   };
-  return jwt.sign(payload, security.jwtSecret, options);
+  return jwt.sign(payload, security.secret, options);
 }
 
 /**
@@ -76,7 +76,7 @@ export function generateRefreshToken(userId: string, email: string): string {
  */
 export function verifyToken(token: string): JWTPayload {
   try {
-    const decoded = jwt.verify(token, security.jwtSecret, {
+    const decoded = jwt.verify(token, security.secret, {
       issuer: TOKEN_CONFIG.issuer,
       audience: TOKEN_CONFIG.audience,
       algorithms: [TOKEN_CONFIG.algorithm],
@@ -111,7 +111,7 @@ export function verifyToken(token: string): JWTPayload {
  */
 export function verifyRefreshToken(token: string): { sub: string; email: string } {
   try {
-    const decoded = jwt.verify(token, security.jwtSecret, {
+    const decoded = jwt.verify(token, security.secret, {
       issuer: TOKEN_CONFIG.issuer,
       audience: TOKEN_CONFIG.audience,
       algorithms: [TOKEN_CONFIG.algorithm],
@@ -237,11 +237,11 @@ export function generateTokenPair(
  * Validate JWT configuration
  */
 export function validateJWTConfiguration(): void {
-  if (!security.jwtSecret) {
+  if (!security.secret) {
     throw new Error('JWT_SECRET is required for token operations');
   }
 
-  if (security.jwtSecret.length < 32) {
+  if (security.secret.length < 32) {
     throw new Error('JWT_SECRET must be at least 32 characters long');
   }
 

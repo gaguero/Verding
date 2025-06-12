@@ -1,79 +1,56 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { database, security } from '../config/index.js';
 import { AuthProvider, OAuthProvider } from './types.js';
+import jwt from 'jsonwebtoken';
 
 // Supabase client instance
-let supabaseClient: SupabaseClient | null = null;
+let supabaseClient: SupabaseClient<any, 'public', any> | null = null;
+let serviceRoleClient: SupabaseClient<any, 'public', any> | null = null;
 
 /**
- * Initialize Supabase client with authentication configuration
+ * Initialize Supabase client with anon key
  */
-export function initializeSupabaseClient(): SupabaseClient {
+export function getSupabaseClient(): SupabaseClient<any, 'public', any> {
   if (!supabaseClient) {
-    if (!database.supabase.url || !database.supabase.anonKey) {
-      throw new Error('Supabase configuration is missing. Please check SUPABASE_URL and SUPABASE_ANON_KEY environment variables.');
-    }
-
     supabaseClient = createClient(
-      database.supabase.url,
-      database.supabase.anonKey,
+      database.url,
+      database.anonKey,
       {
         auth: {
-          // Enable automatic token refresh
-          autoRefreshToken: true,
-          // Persist session in memory for server-side usage
-          persistSession: false,
-          // Detect session from URL for OAuth callbacks
-          detectSessionInUrl: true,
-          // Flow type for authentication
-          flowType: 'pkce',
+          autoRefreshToken: database.autoRefreshToken,
+          persistSession: database.persistSession,
+          detectSessionInUrl: database.detectSessionInUrl,
         },
-        // Global headers for all requests
-        global: {
-          headers: {
-            'X-Client-Info': 'verding-backend',
-          },
+        db: {
+          schema: 'public',
         },
       }
     );
   }
-
-  return supabaseClient;
+  return supabaseClient!;
 }
 
 /**
- * Get Supabase client with service role key for admin operations
+ * Initialize Supabase client with service role key (admin access)
  */
-export function getServiceRoleClient(): SupabaseClient {
-  if (!database.supabase.serviceRoleKey) {
-    throw new Error('Service role key is required for admin operations. Please set SUPABASE_SERVICE_ROLE_KEY environment variable.');
-  }
-
-  return createClient(
-    database.supabase.url,
-    database.supabase.serviceRoleKey,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-      global: {
-        headers: {
-          'X-Client-Info': 'verding-backend-admin',
+export function getServiceRoleClient(): SupabaseClient<any, 'public', any> {
+  if (!serviceRoleClient) {
+    serviceRoleClient = createClient(
+      database.url,
+      database.serviceRoleKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+          detectSessionInUrl: false,
         },
-      },
-    }
-  );
-}
-
-/**
- * Get the initialized Supabase client
- */
-export function getSupabaseClient(): SupabaseClient {
-  if (!supabaseClient) {
-    return initializeSupabaseClient();
+        db: {
+          schema: 'public',
+        },
+      }
+    );
   }
-  return supabaseClient;
+  return serviceRoleClient!;
 }
 
 /**
@@ -190,14 +167,16 @@ export function validateProviderConfiguration(): void {
   }
 
   // Validate Supabase configuration
-  if (!database.supabase.url || !database.supabase.anonKey) {
+  if (!database.url || !database.anonKey) {
     throw new Error('Supabase configuration is incomplete');
   }
 
   // Validate JWT secret for token operations
-  if (!security.jwtSecret || security.jwtSecret.length < 32) {
+  if (!security.secret || security.secret.length < 32) {
     throw new Error('JWT_SECRET must be at least 32 characters long');
   }
 
   console.log('Authentication provider configuration validated successfully');
-} 
+}
+
+ 
