@@ -24,11 +24,10 @@ COPY . .
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
-# Generate Prisma client code for the backend
-RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
-
-# Build the backend using its local tsconfig.json
-RUN npx tsc -p packages/backend/tsconfig.json
+# Generate Prisma client and build the backend in its package context
+RUN cd packages/backend \
+    && npx prisma generate --schema=prisma/schema.prisma \
+    && npm run build
 
 # Stage 3: Production backend image
 FROM node:18-alpine AS backend
