@@ -38,6 +38,10 @@ COPY nginx.conf /etc/nginx/nginx.conf.template
 # Create startup script to substitute environment variables with defaults
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'export BACKEND_URL=${BACKEND_URL:-http://localhost:3001}' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo '# Add https:// prefix if BACKEND_URL does not start with http' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'if [ "${BACKEND_URL#http}" = "$BACKEND_URL" ]; then' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo '  export BACKEND_URL="https://$BACKEND_URL"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'fi' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'echo "Using BACKEND_URL: $BACKEND_URL"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'envsubst "\$BACKEND_URL" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'echo "Generated nginx.conf:"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
