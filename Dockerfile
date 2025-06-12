@@ -27,8 +27,10 @@ RUN npm install --ignore-scripts
 # Generate Prisma client for the backend
 RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
 
-# Build the backend using its local tsconfig.json
-RUN npm run build --prefix packages/backend
+# Build the backend using its dedicated build config
+WORKDIR /app/packages/backend
+RUN npm run build
+WORKDIR /app
 
 WORKDIR /app
 
