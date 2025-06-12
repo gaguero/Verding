@@ -1,21 +1,21 @@
-import { User } from '@supabase/supabase-js';
 import { getSupabaseClient, getServiceRoleClient } from './providers.js';
-import { 
-  AuthenticatedUser, 
-  UserProfile, 
-  PropertyAccess, 
-  SessionValidation, 
+import {
+  AuthenticatedUser,
+  UserProfile,
+  PropertyAccess,
+  SessionValidation,
   UserPermissions,
   AuthError,
-  AuthErrorType
+  AuthErrorType,
 } from './types.js';
+import { User } from '@supabase/supabase-js';
 
 /**
  * Get user profile from database
  */
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const supabase = getSupabaseClient();
-  
+
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
@@ -41,10 +41,8 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
  */
 export async function getUserProperties(userId: string): Promise<PropertyAccess[]> {
   const supabase = getSupabaseClient();
-  
-  const { data, error } = await supabase
-    .rpc('get_current_user_properties')
-    .eq('user_id', userId);
+
+  const { data, error } = await supabase.rpc('get_current_user_properties').eq('user_id', userId);
 
   if (error) {
     throw new AuthError(
@@ -61,15 +59,15 @@ export async function getUserProperties(userId: string): Promise<PropertyAccess[
  */
 export async function validateUserSession(accessToken: string): Promise<SessionValidation> {
   const supabase = getSupabaseClient();
-  
+
   // Set the session with the provided access token
-  const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
-  
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser(accessToken);
+
   if (authError || !user) {
-    throw new AuthError(
-      AuthErrorType.INVALID_TOKEN,
-      'Invalid or expired access token'
-    );
+    throw new AuthError(AuthErrorType.INVALID_TOKEN, 'Invalid or expired access token');
   }
 
   // Get session validation data using the database function
@@ -93,7 +91,7 @@ export async function validateUserSession(accessToken: string): Promise<SessionV
 export async function createAuthenticatedUser(user: User): Promise<AuthenticatedUser> {
   const profile = await getUserProfile(user.id);
   const properties = await getUserProperties(user.id);
-  
+
   // Get active property from agent session
   const supabase = getSupabaseClient();
   const { data: sessionData } = await supabase
@@ -105,17 +103,19 @@ export async function createAuthenticatedUser(user: User): Promise<Authenticated
   const activePropertyId = sessionData?.active_property_id;
   const activeProperty = properties.find(p => p.property_id === activePropertyId);
 
-  const permissions: UserPermissions = activeProperty ? {
-    can_view: activeProperty.can_view,
-    can_edit: activeProperty.can_edit,
-    can_manage: activeProperty.can_manage,
-    is_super_admin: activeProperty.role === 'owner',
-  } : {
-    can_view: false,
-    can_edit: false,
-    can_manage: false,
-    is_super_admin: false,
-  };
+  const permissions: UserPermissions = activeProperty
+    ? {
+        can_view: activeProperty.can_view,
+        can_edit: activeProperty.can_edit,
+        can_manage: activeProperty.can_manage,
+        is_super_admin: activeProperty.role === 'owner',
+      }
+    : {
+        can_view: false,
+        can_edit: false,
+        can_manage: false,
+        is_super_admin: false,
+      };
 
   const authenticatedUser: AuthenticatedUser = {
     id: user.id,
@@ -140,9 +140,8 @@ export async function createAuthenticatedUser(user: User): Promise<Authenticated
  */
 export async function setActiveProperty(userId: string, propertyId: string): Promise<boolean> {
   const supabase = getSupabaseClient();
-  
-  const { data, error } = await supabase
-    .rpc('set_active_property', { property_uuid: propertyId });
+
+  const { data, error } = await supabase.rpc('set_active_property', { property_uuid: propertyId });
 
   if (error) {
     throw new AuthError(
@@ -158,12 +157,12 @@ export async function setActiveProperty(userId: string, propertyId: string): Pro
  * Check if user has specific permission for a property
  */
 export async function checkPropertyPermission(
-  userId: string, 
-  propertyId: string, 
+  userId: string,
+  propertyId: string,
   permission: 'view' | 'edit' | 'manage'
 ): Promise<boolean> {
   const supabase = getSupabaseClient();
-  
+
   let functionName: string;
   switch (permission) {
     case 'view':
@@ -179,8 +178,10 @@ export async function checkPropertyPermission(
       return false;
   }
 
-  const { data, error } = await supabase
-    .rpc(functionName, { property_uuid: propertyId, user_uuid: userId });
+  const { data, error } = await supabase.rpc(functionName, {
+    property_uuid: propertyId,
+    user_uuid: userId,
+  });
 
   if (error) {
     console.error(`Permission check failed: ${error.message}`);
@@ -200,14 +201,13 @@ export async function inviteUserToProperty(
   invitedBy: string
 ): Promise<string> {
   const supabase = getServiceRoleClient();
-  
-  const { data, error } = await supabase
-    .rpc('invite_user_to_property', {
-      user_email: userEmail,
-      property_uuid: propertyId,
-      user_role: role,
-      invited_by_uuid: invitedBy
-    });
+
+  const { data, error } = await supabase.rpc('invite_user_to_property', {
+    user_email: userEmail,
+    property_uuid: propertyId,
+    user_role: role,
+    invited_by_uuid: invitedBy,
+  });
 
   if (error) {
     throw new AuthError(
@@ -229,7 +229,7 @@ export async function createUserProfile(
   additionalData?: Partial<UserProfile>
 ): Promise<UserProfile> {
   const supabase = getServiceRoleClient();
-  
+
   const profileData = {
     id: userId,
     email,
@@ -261,7 +261,7 @@ export async function updateUserProfile(
   updates: Partial<UserProfile>
 ): Promise<UserProfile> {
   const supabase = getSupabaseClient();
-  
+
   const { data, error } = await supabase
     .from('user_profiles')
     .update(updates)
@@ -313,7 +313,7 @@ export function generateSecureToken(length: number = 32): string {
 export async function hashPassword(password: string): Promise<string> {
   // Note: Supabase handles password hashing automatically
   // This function is provided for additional security layers if needed
-  const bcrypt = await import('bcrypt');
+  const bcrypt = await import('bcryptjs');
   const saltRounds = 12;
   return bcrypt.hash(password, saltRounds);
 }
@@ -322,6 +322,6 @@ export async function hashPassword(password: string): Promise<string> {
  * Verify password against hash
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const bcrypt = await import('bcrypt');
+  const bcrypt = await import('bcryptjs');
   return bcrypt.compare(password, hash);
-} 
+}
