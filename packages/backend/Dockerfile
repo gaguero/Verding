@@ -1,7 +1,7 @@
 # Multi-stage Dockerfile for Verding Platform
 
 # Stage 1: Base image with Node.js
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 RUN apk add --no-cache libc6-compat
@@ -10,9 +10,15 @@ WORKDIR /app
 # Copy all monorepo package files and configs from the build context (monorepo root)
 COPY package*.json ./
 COPY turbo.json ./
-COPY packages/*/package.json ./packages/*/
 
-# Install all monorepo dependencies
+# Explicitly copy each package.json to maintain directory structure for workspaces
+COPY packages/backend/package.json ./packages/backend/
+COPY packages/web/package.json ./packages/web/
+COPY packages/mobile/package.json ./packages/mobile/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/docs/package.json ./packages/docs/
+
+# Install only production monorepo dependencies
 RUN npm install --omit=dev --ignore-scripts && npm cache clean --force
 
 # Stage 2: Build stage
@@ -34,17 +40,17 @@ RUN npm run build
 WORKDIR /app
 
 # Stage 3: Production backend image
-FROM node:18-alpine AS backend
+FROM node:20-alpine AS backend
 WORKDIR /app
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 backend
 
-# Copy ONLY the necessary built backend assets and node_modules from the builder
+# Copy ONLY the necessary built backend assets and production node_modules
 COPY --from=builder /app/packages/backend/dist ./dist
 COPY --from=builder /app/packages/backend/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=base /app/node_modules ./node_modules
 
 USER backend
 EXPOSE 3001
