@@ -2,6 +2,7 @@
   "name": "@verding/backend",
   "version": "0.1.1",
   "description": "Verding Backend API",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

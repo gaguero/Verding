@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { security } from '../config/index.js';
-import { AuthError, AuthErrorType, UserPermissions } from './types';
+import { AuthError, AuthErrorType, UserPermissions } from './types.js';
 import { StringValue } from 'ms';
 
 // JWT payload interface
