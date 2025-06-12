@@ -25,9 +25,13 @@ COPY . .
 RUN npm install --ignore-scripts
 
 # Generate Prisma client and build the backend in its package context
-RUN cd packages/backend \
-    && npx prisma generate --schema=prisma/schema.prisma \
-    && npm run build
+WORKDIR /app/packages/backend
+
+RUN npx prisma generate --schema=prisma/schema.prisma
+
+RUN npm run build
+
+WORKDIR /app
 
 # Stage 3: Production backend image
 FROM node:18-alpine AS backend
