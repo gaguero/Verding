@@ -28,14 +28,20 @@ RUN ls -l /app/packages/web
 # Stage 3: Production web server
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
+
 # Copy built assets from the builder stage
 COPY --from=builder /app/packages/web/dist .
+
 # Copy nginx configuration template
 COPY nginx.conf /etc/nginx/nginx.conf.template
 
-# Create startup script to substitute environment variables
+# Create startup script to substitute environment variables with defaults
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'export BACKEND_URL=${BACKEND_URL:-http://localhost:3001}' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'echo "Using BACKEND_URL: $BACKEND_URL"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'envsubst "\$BACKEND_URL" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'echo "Generated nginx.conf:"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'cat /etc/nginx/nginx.conf | grep -A 2 -B 2 proxy_pass' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     chmod +x /docker-entrypoint.d/40-envsubst-on-nginx.sh
 
 EXPOSE 80
