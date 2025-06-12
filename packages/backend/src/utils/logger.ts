@@ -1,5 +1,5 @@
-import winston from 'winston';
 import { isDev } from '../config/index.js';
+import winston from 'winston';
 
 // Custom log format
 const logFormat = winston.format.combine(
@@ -39,29 +39,8 @@ const logger = winston.createLogger({
   ],
 });
 
-// Add file transports in production
-if (!isDev) {
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-    })
-  );
-
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-    })
-  );
-}
+// Note: File logging disabled for containerized environments (Railway)
+// All logs are captured via console output and available in Railway dashboard
 
 // Stream for Morgan HTTP request logging
 export const loggerStream = {
@@ -71,4 +50,4 @@ export const loggerStream = {
 };
 
 export { logger };
-export default logger; 
+export default logger;
