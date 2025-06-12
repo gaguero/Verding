@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { getSupabaseClient } from './providers';
-import { AuthError, AuthErrorType, PropertyAccess } from './types';
-import { isPropertyOwner } from './rbac';
+import { getSupabaseClient } from './providers.js';
+import { AuthError, AuthErrorType, PropertyAccess } from './types.js';
+import { isPropertyOwner } from './rbac.js';
 
 /**
  * Property context isolation middleware

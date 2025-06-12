@@ -6,22 +6,22 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
-import { server, isDev } from './config';
-import { logger } from './utils/logger';
-import { errorHandler } from './middleware/errorHandler';
-import { requestLogger } from './middleware/requestLogger';
-import { authenticateToken, requirePropertyAccess } from './auth/middleware';
+import { requestLogger } from './middleware/requestLogger.js';
+import { server, isDev } from './config/index.js';
+import { logger } from './utils/logger.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { authenticateToken, requirePropertyAccess } from './auth/middleware.js';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
-// Import route handlers
-import authRoutes from './routes/auth';
-import propertyRoutes from './routes/properties';
-import cropRoutes from './routes/crops';
-import batchRoutes from './routes/batches';
-import inventoryRoutes from './routes/inventory';
-import salesRoutes from './routes/sales';
-import mcpRoutes from './routes/mcp';
+// Import route modules
+import authRoutes from './routes/auth.js';
+import propertyRoutes from './routes/properties.js';
+import cropRoutes from './routes/crops.js';
+import batchRoutes from './routes/batches.js';
+import inventoryRoutes from './routes/inventory.js';
+import salesRoutes from './routes/sales.js';
+import mcpRoutes from './routes/mcp.js';
 
 // Create Express app
 const app = express();

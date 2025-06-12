@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { database, security } from '../config';
-import { AuthProvider, OAuthProvider } from './types';
+import { database, security } from '../config/index.js';
+import { AuthProvider, OAuthProvider } from './types.js';
 
 // Supabase client instance
 let supabaseClient: SupabaseClient | null = null;

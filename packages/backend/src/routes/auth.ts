@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
-import { database, security } from '../config';
-import { asyncHandler, AuthenticationError, ConflictError } from '../middleware/errorHandler';
-import { optionalAuth } from '../auth/middleware';
-import { logger } from '../utils/logger';
-import { AuthError, AuthErrorType } from '../auth/types';
+import { database, security } from '../config/index.js';
+import { asyncHandler, AuthenticationError, ConflictError } from '../middleware/errorHandler.js';
+import { optionalAuth } from '../auth/middleware.js';
+import { logger } from '../utils/logger.js';
+import { AuthError, AuthErrorType } from '../auth/types.js';
 
 const router = Router();
 

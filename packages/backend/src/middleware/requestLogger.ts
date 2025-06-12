@@ -1,6 +1,6 @@
 import morgan from 'morgan';
-import { loggerStream } from '../utils/logger';
-import { isDev } from '../config';
+import { loggerStream } from '../utils/logger.js';
+import { isDev } from '../config/index.js';
 
 // Custom token for response time in milliseconds
 morgan.token('response-time-ms', (req, res) => {

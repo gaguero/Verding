@@ -1,5 +1,10 @@
 // Import all required items for convenience exports
-import { environment, isDevelopment, dbConfig, jwtConfig } from './environment';
+import { 
+  environment, 
+  isDevelopment, 
+  dbConfig, 
+  jwtConfig 
+} from './environment.js';
 
 // Main configuration exports
 export {
@@ -12,7 +17,7 @@ export {
   dbConfig,
   corsConfig,
   jwtConfig,
-} from './environment';
+} from './environment.js';
 
 // Convenience exports for common imports
 export const isDev = isDevelopment;

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken, extractBearerToken } from './jwt';
-import { createAuthenticatedUser, validateUserSession } from './utils';
-import { getSupabaseClient } from './providers';
-import { AuthError, PropertyAccess } from './types';
+import { verifyToken, extractBearerToken } from './jwt.js';
+import { createAuthenticatedUser, validateUserSession } from './utils.js';
+import { getSupabaseClient } from './providers.js';
+import { AuthError, PropertyAccess } from './types.js';
 
 /**
  * Authentication middleware - validates JWT tokens and sets user context

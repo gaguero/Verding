@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { security } from '../config';
+import { security } from '../config/index.js';
 import { AuthError, AuthErrorType, UserPermissions } from './types';
 import { StringValue } from 'ms';
 

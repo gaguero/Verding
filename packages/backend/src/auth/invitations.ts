@@ -1,7 +1,7 @@
-import { getSupabaseClient, getServiceRoleClient } from './providers';
-import { generateSecureToken } from './utils';
-import { canInviteWithRole } from './rbac';
-import { UserRole, AuthError, AuthErrorType } from './types';
+import { getSupabaseClient, getServiceRoleClient } from './providers.js';
+import { generateSecureToken } from './utils.js';
+import { canInviteWithRole } from './rbac.js';
+import { UserRole, AuthError, AuthErrorType } from './types.js';
 
 // Invitation status types
 export type InvitationStatus = 'pending' | 'accepted' | 'expired' | 'cancelled';

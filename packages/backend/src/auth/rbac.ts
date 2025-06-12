@@ -1,4 +1,4 @@
-import { UserRole, UserPermissions, PropertyAccess } from './types';
+import { UserRole, UserPermissions, PropertyAccess } from './types.js';
 
 // Role hierarchy definition (higher number = more permissions)
 export const ROLE_HIERARCHY: Record<UserRole, number> = {

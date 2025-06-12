@@ -9,8 +9,8 @@ import {
   isPropertyOwner,
   getResourcePermissions,
   getAllowedRolesToAssign
-} from './rbac';
-import { UserRole } from './types';
+} from './rbac.js';
+import { UserRole } from './types.js';
 
 /**
  * Helper function to get the user's role in the active property.

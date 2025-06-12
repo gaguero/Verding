@@ -1,5 +1,5 @@
-import { isDev } from '../config';
-import { logger } from '../utils/logger';
+import { isDev } from '../config/index.js';
+import { logger } from '../utils/logger.js';
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 

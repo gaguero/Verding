@@ -1,5 +1,5 @@
 import { User } from '@supabase/supabase-js';
-import { getSupabaseClient, getServiceRoleClient } from './providers';
+import { getSupabaseClient, getServiceRoleClient } from './providers.js';
 import { 
   AuthenticatedUser, 
   UserProfile, 
@@ -7,8 +7,8 @@ import {
   SessionValidation, 
   UserPermissions,
   AuthError,
-  AuthErrorType 
-} from './types';
+  AuthErrorType
+} from './types.js';
 
 /**
  * Get user profile from database
