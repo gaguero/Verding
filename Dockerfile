@@ -24,12 +24,11 @@ COPY . .
 # Install all dependencies including devDependencies for build tools
 RUN npm install --ignore-scripts
 
-# Generate Prisma client and build the backend in its package context
-WORKDIR /app/packages/backend
+# Generate Prisma client for the backend
+RUN npx prisma generate --schema=packages/backend/prisma/schema.prisma
 
-RUN npx prisma generate --schema=prisma/schema.prisma
-
-RUN npm run build
+# Build the backend using its local tsconfig.json
+RUN npm run build --prefix packages/backend
 
 WORKDIR /app
 
