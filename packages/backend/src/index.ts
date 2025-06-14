@@ -1,27 +1,26 @@
-// Verding Backend API
-console.log('Verding Backend starting...');
-
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
-import { requestLogger } from './middleware/requestLogger.js';
-import { server, isDev } from './config/index.js';
-import { logger } from './utils/logger.js';
-import { errorHandler } from './middleware/errorHandler.js';
 import { authenticateToken, requirePropertyAccess } from './auth/middleware.js';
+import { server, isDev } from './config/index.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { requestLogger } from './middleware/requestLogger.js';
+// Import route modules
+import authRoutes from './routes/auth.js';
+import batchRoutes from './routes/batches.js';
+import cropRoutes from './routes/crops.js';
+import inventoryRoutes from './routes/inventory.js';
+import mcpRoutes from './routes/mcp.js';
+import propertyRoutes from './routes/properties.js';
+import salesRoutes from './routes/sales.js';
+import { logger } from './utils/logger.js';
+import compression from 'compression';
+import cors from 'cors';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
-// Import route modules
-import authRoutes from './routes/auth.js';
-import propertyRoutes from './routes/properties.js';
-import cropRoutes from './routes/crops.js';
-import batchRoutes from './routes/batches.js';
-import inventoryRoutes from './routes/inventory.js';
-import salesRoutes from './routes/sales.js';
-import mcpRoutes from './routes/mcp.js';
+// Verding Backend API
+console.log('Verding Backend starting...');
 
 // Create Express app
 const app = express();
@@ -30,15 +29,19 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: isDev ? false : undefined,
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: isDev ? false : undefined,
+  })
+);
 
 // CORS configuration
-app.use(cors({
-  origin: isDev ? true : process.env.FRONTEND_URL?.split(',') || false,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: isDev ? true : process.env.FRONTEND_URL?.split(',') || false,
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
@@ -114,15 +117,16 @@ app.use('*', (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Start server
-const PORT = server.port || 3001;
-
-app.listen(PORT, () => {
-  logger.info(`🚀 Server running on port ${PORT}`);
-  logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
-  logger.info(`📚 API docs: http://localhost:${PORT}/api/v1`);
-});
+// Start server only when not under Jest tests
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = server.port || 3001;
+  app.listen(PORT, () => {
+    logger.info(`🚀 Server running on port ${PORT}`);
+    logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
+    logger.info(`📚 API docs: http://localhost:${PORT}/api/v1`);
+  });
+}
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
