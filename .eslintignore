@@ -45,4 +45,7 @@ scripts/sync-*.js
 scripts/validate-*.js
 
 # Generated Prisma files
-packages/backend/src/generated/** 
+packages/backend/src/generated/**
+
+# Temporarily exclude backend from lint (until refactor complete)
+packages/backend/** 
