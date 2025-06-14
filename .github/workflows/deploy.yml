@@ -56,6 +56,10 @@ jobs:
           npx eslint packages/mobile/src --ext .ts,.tsx
           npx eslint packages/shared/src --ext .ts,.tsx
 
+      - name: Test all packages
+        run: |
+          npm run test --workspaces --if-present
+
       - name: Build all packages
         run: npm run build
         env:
