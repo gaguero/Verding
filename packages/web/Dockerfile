@@ -49,4 +49,4 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     chmod +x /docker-entrypoint.d/40-envsubst-on-nginx.sh
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"] 
+# Use default nginx entrypoint and cmd for proper initialization 
