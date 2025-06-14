@@ -1,6 +1,18 @@
 import { API_BASE_URL } from '@verding/shared/config';
 
-export async function loginUser(credentials: any) {
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export async function loginUser(credentials: LoginCredentials) {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {
@@ -17,7 +29,7 @@ export async function loginUser(credentials: any) {
   return response.json();
 }
 
-export async function registerUser(userInfo: any) {
+export async function registerUser(userInfo: RegisterInfo) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: 'POST',
     headers: {

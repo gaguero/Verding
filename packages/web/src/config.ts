@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 // Import shared utilities conditionally to avoid build issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let sharedEnv: any;
 try {
   sharedEnv = require('@verding/shared');

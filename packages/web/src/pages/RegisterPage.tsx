@@ -26,8 +26,9 @@ export function RegisterPage() {
       const { token, user } = await registerUser({ firstName, lastName, email, password });
       login(token, user);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during registration.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An error occurred during registration.';
+      setError(message);
     }
   };
 

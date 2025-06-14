@@ -2,10 +2,17 @@ import create from 'zustand';
 
 interface AuthState {
   token: string | null;
-  user: any | null; // Replace 'any' with a proper user type
+  user: User | null;
   isAuthenticated: boolean;
-  login: (token: string, user: any) => void;
+  login: (token: string, user: User) => void;
   logout: () => void;
+}
+
+interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export const useAuthStore = create<AuthState>(set => ({
