@@ -56,7 +56,7 @@ deploy_service() {
     export VITE_NODE_ENV=$ENVIRONMENT
     
     if [[ "$ENVIRONMENT" == "production" ]]; then
-        export VITE_API_BASE_URL="https://verding-backend.up.railway.app"
+        export VITE_API_BASE_URL="https://verding-backend-production.up.railway.app"
     else
         export VITE_API_BASE_URL="https://verding-backend-staging.up.railway.app"
     fi
@@ -84,9 +84,9 @@ health_check() {
     
     if [[ "$ENVIRONMENT" == "production" ]]; then
         if [[ "$service_name" == "backend" ]]; then
-            url="https://verding-backend.up.railway.app"
+            url="https://verding-backend-production.up.railway.app"
         else
-            url="https://verding-web.up.railway.app"
+            url="https://verding-web-production.up.railway.app"
         fi
     else
         if [[ "$service_name" == "backend" ]]; then
@@ -164,8 +164,8 @@ echo -e "${BLUE}Service: ${SERVICE}${NC}"
 
 if [[ "$ENVIRONMENT" == "production" ]]; then
     echo -e "${BLUE}🌐 Production URLs:${NC}"
-    echo -e "   Backend: https://verding-backend.up.railway.app"
-    echo -e "   Web: https://verding-web.up.railway.app"
+    echo -e "   Backend: https://verding-backend-production.up.railway.app"
+    echo -e "   Web: https://verding-web-production.up.railway.app"
 else
     echo -e "${BLUE}🌐 Staging URLs:${NC}"
     echo -e "   Backend: https://verding-backend-staging.up.railway.app"

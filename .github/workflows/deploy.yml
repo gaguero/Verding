@@ -38,24 +38,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build all packages
-        run: npm run build
-        env:
-          NODE_ENV: ${{ steps.env.outputs.environment == 'production' && 'production' || 'staging' }}
-          VITE_NODE_ENV: ${{ steps.env.outputs.environment == 'production' && 'production' || 'staging' }}
-          VITE_API_BASE_URL: ${{ steps.env.outputs.environment == 'production' && 'https://verding-backend.up.railway.app' || 'https://verding-backend-staging.up.railway.app' }}
-          VITE_BUILD_TIME: ${{ github.run_id }}-${{ github.run_number }}
-          VITE_APP_VERSION: ${{ github.ref_name }}
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Security scan
-        run: npm audit --audit-level=high
-
       - name: Determine deployment environment
         id: env
         run: |
@@ -64,6 +46,24 @@ jobs:
           else
             echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+        env:
+          NODE_ENV: ${{ steps.env.outputs.environment == 'production' && 'production' || 'staging' }}
+          VITE_NODE_ENV: ${{ steps.env.outputs.environment == 'production' && 'production' || 'staging' }}
+          VITE_API_BASE_URL: ${{ steps.env.outputs.environment == 'production' && 'https://verding-backend-production.up.railway.app' || 'https://verding-backend-staging.up.railway.app' }}
+          VITE_BUILD_TIME: ${{ github.run_id }}-${{ github.run_number }}
+          VITE_APP_VERSION: ${{ github.ref_name }}
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Security scan
+        run: npm audit --audit-level=high
 
       - name: Run Database Migrations
         if: matrix.service == 'backend'
@@ -99,7 +99,7 @@ jobs:
       - name: Health Check
         run: |
           echo "Running health checks for ${{ steps.env.outputs.environment }}..."
-          
+
           # Determine URLs based on environment
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
             BACKEND_URL="${{ secrets.BACKEND_PRODUCTION_URL }}"
