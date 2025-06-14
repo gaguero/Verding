@@ -21,7 +21,7 @@ global.IntersectionObserver = class IntersectionObserver {
   root: Element | null = null;
   rootMargin: string = '';
   thresholds: ReadonlyArray<number> = [];
-  
+
   constructor() {}
   disconnect() {}
   observe() {}
@@ -37,4 +37,4 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-}; 
+};

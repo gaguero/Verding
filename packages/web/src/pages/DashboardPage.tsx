@@ -1,9 +1,10 @@
-import React from 'react';
 import { Layout } from '@/components/Layout';
 // import { Button } from '@/components/ui';
 // import { SensorCard } from '@/components/ui';
 // import { ResourcePanel } from '@/components/ui';
 import { usePropertyStore } from '@/stores/propertyStore';
+import React from 'react';
+
 // import styles from '@/styles/components.module.css';
 
 /* eslint-disable max-len */
@@ -12,13 +13,17 @@ export function DashboardPage() {
   const { isLoading } = usePropertyStore();
 
   if (isLoading) {
-    return <Layout><div>Loading...</div></Layout>;
+    return (
+      <Layout>
+        <div>Loading...</div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <div className='p-6'>
+        <h1 className='text-2xl font-bold mb-4'>Dashboard</h1>
 
         {/*
         <Card>
@@ -32,7 +37,6 @@ export function DashboardPage() {
             <Button variant="primary">Example Button</Button>
           </CardContent>
         </Card>
-
         
         <MetricsDashboard
           propertyContext={{ propertyId: 'prop-123', propertyName: 'Greenfield Farms' }}
@@ -47,8 +51,6 @@ export function DashboardPage() {
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
           }}
         />
-        
-
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-6">
           <SensorCard
@@ -65,8 +67,6 @@ export function DashboardPage() {
           />
         </div>
         
-
-        
         <ResourcePanel
           title="Equipment Status"
           resources={[
@@ -77,8 +77,7 @@ export function DashboardPage() {
           ]}
         />
         */}
-        
       </div>
     </Layout>
   );
-} 
+}

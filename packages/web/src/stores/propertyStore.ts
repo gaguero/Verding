@@ -16,11 +16,11 @@ interface PropertyState {
   setError: (error: string | null) => void;
 }
 
-export const usePropertyStore = create<PropertyState>((set) => ({
+export const usePropertyStore = create<PropertyState>(set => ({
   currentProperty: null,
   isLoading: false,
   error: null,
-  setCurrentProperty: (property) => set({ currentProperty: property }),
-  setLoading: (loading) => set({ isLoading: loading }),
-  setError: (error) => set({ error: error }),
-})); 
+  setCurrentProperty: property => set({ currentProperty: property }),
+  setLoading: loading => set({ isLoading: loading }),
+  setError: error => set({ error: error }),
+}));

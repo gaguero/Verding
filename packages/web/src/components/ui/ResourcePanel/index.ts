@@ -1,1 +1,1 @@
-export { default as ResourcePanel, type ResourcePanelProps, type Resource } from './ResourcePanel'; 
+export { default as ResourcePanel, type ResourcePanelProps, type Resource } from './ResourcePanel';

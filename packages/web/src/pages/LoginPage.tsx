@@ -1,9 +1,9 @@
+import { Button } from '../components/ui/Button';
+import { loginUser } from '../services/authService';
+import { useAuthStore } from '../stores/authStore';
+import styles from './LoginPage.module.css';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './LoginPage.module.css';
-import { useAuthStore } from '../stores/authStore';
-import { loginUser } from '../services/authService';
-import { Button } from '../components/ui/Button';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -39,49 +39,58 @@ export function LoginPage() {
         <form className={styles.form} onSubmit={handleSubmit}>
           {error && <div className={styles.error}>{error}</div>}
           <div className={styles.group}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor='email'>Email</label>
             <input
-              type="email"
-              id="email"
+              type='email'
+              id='email'
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
-              placeholder="Enter your email"
+              placeholder='Enter your email'
             />
           </div>
 
           <div className={styles.group}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor='password'>Password</label>
             <input
-              type="password"
-              id="password"
+              type='password'
+              id='password'
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
-              placeholder="Enter your password"
+              placeholder='Enter your password'
             />
           </div>
 
-          <Button type="submit" variant="primary" size="medium">
+          <Button type='submit' variant='primary' size='medium'>
             Sign In
           </Button>
         </form>
 
         <div className={styles.footer}>
-          <p>Don't have an account? <Link to="/register" className={styles.link}>Sign up</Link></p>
-          <p><Link to="/forgot-password" className={styles.link}>Forgot your password?</Link></p>
+          <p>
+            Don't have an account?{' '}
+            <Link to='/register' className={styles.link}>
+              Sign up
+            </Link>
+          </p>
+          <p>
+            <Link to='/forgot-password' className={styles.link}>
+              Forgot your password?
+            </Link>
+          </p>
         </div>
 
         <div className={styles.oauthSection}>
           <div className={styles.divider}>
             <span>Or continue with</span>
           </div>
-          
+
           <div className={styles.oauthButtons}>
-            <Button variant="ghost" size="medium">
+            <Button variant='ghost' size='medium'>
               <span>🔗</span> Google
             </Button>
-            <Button variant="ghost" size="medium">
+            <Button variant='ghost' size='medium'>
               <span>🔗</span> GitHub
             </Button>
           </div>
@@ -89,4 +98,4 @@ export function LoginPage() {
       </div>
     </div>
   );
-} 
+}

@@ -1,0 +1,2 @@
+# Ignore generated Prisma client types
+src/generated/** 

@@ -32,4 +32,4 @@ export async function registerUser(userInfo: any) {
   }
 
   return response.json();
-} 
+}

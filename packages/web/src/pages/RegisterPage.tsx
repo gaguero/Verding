@@ -1,9 +1,9 @@
+import { Button } from '../components/ui/Button';
+import { registerUser } from '../services/authService';
+import { useAuthStore } from '../stores/authStore';
+import styles from './RegisterPage.module.css';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './RegisterPage.module.css';
-import { Button } from '../components/ui/Button';
-import { useAuthStore } from '../stores/authStore';
-import { registerUser } from '../services/authService';
 
 export function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -42,74 +42,79 @@ export function RegisterPage() {
         <form className={styles.form} onSubmit={handleSubmit}>
           {error && <div className={styles.error}>{error}</div>}
           <div className={styles.group}>
-            <label htmlFor="firstName">First Name</label>
+            <label htmlFor='firstName'>First Name</label>
             <input
-              type="text"
-              id="firstName"
+              type='text'
+              id='firstName'
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={e => setFirstName(e.target.value)}
               required
-              placeholder="Enter your first name"
+              placeholder='Enter your first name'
             />
           </div>
 
           <div className={styles.group}>
-            <label htmlFor="lastName">Last Name</label>
+            <label htmlFor='lastName'>Last Name</label>
             <input
-              type="text"
-              id="lastName"
+              type='text'
+              id='lastName'
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={e => setLastName(e.target.value)}
               required
-              placeholder="Enter your last name"
+              placeholder='Enter your last name'
             />
           </div>
 
           <div className={styles.group}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor='email'>Email</label>
             <input
-              type="email"
-              id="email"
+              type='email'
+              id='email'
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
-              placeholder="Enter your email"
+              placeholder='Enter your email'
             />
           </div>
 
           <div className={styles.group}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor='password'>Password</label>
             <input
-              type="password"
-              id="password"
+              type='password'
+              id='password'
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
-              placeholder="Create a password"
+              placeholder='Create a password'
             />
           </div>
 
           <div className={styles.group}>
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor='confirmPassword'>Confirm Password</label>
             <input
-              type="password"
-              id="confirmPassword"
+              type='password'
+              id='confirmPassword'
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               required
-              placeholder="Confirm your password"
+              placeholder='Confirm your password'
             />
           </div>
 
-          <Button type="submit" variant="primary" size="medium">
+          <Button type='submit' variant='primary' size='medium'>
             Create Account
           </Button>
         </form>
 
         <div className={styles.footer}>
-          <p>Already have an account? <Link to="/login" className={styles.link}>Sign in</Link></p>
+          <p>
+            Already have an account?{' '}
+            <Link to='/login' className={styles.link}>
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>
   );
-} 
+}
