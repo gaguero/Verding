@@ -3,11 +3,9 @@ describe('Backend', () => {
     expect(true).toBe(true);
   });
 
-  it('should import main module without throwing', () => {
-    expect(() => {
-      jest.isolateModules(() => {
-        require('./index');
-      });
-    }).not.toThrow();
+  it('should import app without starting server', () => {
+    process.env.NODE_ENV = 'test';
+    const { default: app } = require('./index');
+    expect(app).toBeDefined();
   });
 });
