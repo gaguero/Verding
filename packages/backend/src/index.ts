@@ -119,7 +119,7 @@ app.use(errorHandler);
 
 // Start server only when not under Jest tests
 if (process.env.NODE_ENV !== 'test') {
-  const PORT = server.port || 3001;
+  const PORT = process.env.PORT || server.port || 3001;
   app.listen(PORT, () => {
     logger.info(`🚀 Server running on port ${PORT}`);
     logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
