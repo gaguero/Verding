@@ -56,8 +56,7 @@ COPY --from=builder /app/packages/backend/package.json ./package.json
 COPY --from=base /app/node_modules ./node_modules
 
 USER backend
-EXPOSE 3001
+
 ENV NODE_ENV=production
-ENV PORT=3001
 
 CMD ["node", "dist/index.js"] 
