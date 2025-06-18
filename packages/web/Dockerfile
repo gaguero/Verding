@@ -42,6 +42,11 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'if [ "${BACKEND_URL#http}" = "$BACKEND_URL" ]; then' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo '  export BACKEND_URL="https://$BACKEND_URL"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'fi' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    # Append :8080 automatically for Railway internal hostnames when no port is present
+    echo '# Append :8080 for Railway internal URL if no port specified' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'if echo "$BACKEND_URL" | grep -q "railway.internal" && ! echo "$BACKEND_URL" | grep -q ":8080"; then' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo '  export BACKEND_URL="$BACKEND_URL:8080"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
+    echo 'fi' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'echo "Using BACKEND_URL: $BACKEND_URL"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'envsubst "\$BACKEND_URL" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
     echo 'echo "Generated nginx.conf:"' >> /docker-entrypoint.d/40-envsubst-on-nginx.sh && \
