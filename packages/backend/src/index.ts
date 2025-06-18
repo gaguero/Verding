@@ -72,6 +72,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Add a root endpoint to satisfy Railway's default health check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Verding Backend API is healthy and running.',
+    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0', // Consider pulling from package.json in the future
+  });
+});
+
 // API routes
 app.get('/api/v1', (req, res) => {
   res.json({
